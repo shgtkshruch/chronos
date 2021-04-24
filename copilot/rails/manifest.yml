@@ -22,8 +22,6 @@ image:
     args:
       RUBY_VERSION: 3.0.1
       BUNDLER_VERSION: 2.2.16
-      NODE_MAJOR: 14
-      YARN_VERSION: 1.22.5
   # Port exposed through your container to route traffic to it.
   port: 3000
 
