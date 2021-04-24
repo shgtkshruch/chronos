@@ -39,4 +39,5 @@ RUN gem update --system &&\
     gem install bundler:$BUNDLER_VERSION &&\
     bundle install --without development test &&\
     yarn install
-ADD ./ /
+ADD ./ /app
+CMD bundle exec pumactl start
