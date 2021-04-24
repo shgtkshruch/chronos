@@ -1,5 +1,5 @@
 ARG RUBY_VERSION
-FROM ruby:$RUBY_VERSION-buster
+FROM ruby:$RUBY_VERSION-slim-buster
 
 ARG BUNDLER_VERSION
 ARG NODE_MAJOR
@@ -14,9 +14,9 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -\
 
 RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrade &&\
   DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends\
-    build-essential\
     nodejs\
     yarn=$YARN_VERSION-1 &&\
+    build-essential libmariadb-dev &&\
     apt-get clean &&\
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* &&\
     truncate -s 0 /var/log/*log
