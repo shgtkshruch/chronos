@@ -33,6 +33,8 @@ ENV PATH /app/bin:$BUNDLE_BIN:$PATH
 ENV RAILS_ENV=production
 
 WORKDIR /app
+
+# Store puma pids file
 RUN mkdir -p tmp/pids
 
 ADD Gemfile Gemfile.lock package.json yarn.lock ./
