@@ -1,0 +1,32 @@
+<h1>Create new person</h1>
+
+<ul>
+  <%- @person.errors.full_messages.each do |msg| %>
+    <li><%= msg %></li>
+  <% end %>
+</ul>
+
+<%= form_with model: @person do |f| %>
+  <legend>
+    <%= f.label :name %>
+    <%= f.text_field :name %>
+  </legend>
+
+  <legend>
+    <%= f.label :birthday %>
+    <%= f.date_field :birthday %>
+  </legend>
+
+  <legend>
+    <%= f.label :day_of_death %>
+    <%= f.date_field :day_of_death %>
+  </legend>
+
+  <legend>
+    <%= f.label :note %>
+    <%= f.text_area :note %>
+  </legend>
+
+  <%= f.submit 'create' %>
+  <%= link_to 'back', people_path %>
+<% end %>
