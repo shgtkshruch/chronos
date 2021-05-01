@@ -20,7 +20,7 @@ Parameters:
     Description: The duration in seconds before the cluster pauses.
     Default: 1000
 Mappings:
-  railsclusterEnvScalingConfigurationMap: 
+  railsclusterEnvScalingConfigurationMap:
     test:
       "DBMinCapacity": 1 # AllowedValues: [1, 2, 4, 8, 16, 32, 64, 128, 256]
       "DBMaxCapacity": 8 # AllowedValues: [1, 2, 4, 8, 16, 32, 64, 128, 256]
@@ -73,6 +73,10 @@ Resources:
       Family: 'aurora-mysql5.7'
       Parameters:
         character_set_client: 'utf8mb4'
+        character_set_connection: 'utf8mb4'
+        character_set_database: 'utf8mb4'
+        character_set_results: 'utf8mb4'
+        character_set_server: 'utf8mb4'
   railsclusterDBCluster:
     Type: 'AWS::RDS::DBCluster'
     Properties:
