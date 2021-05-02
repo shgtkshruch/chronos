@@ -23,7 +23,7 @@ source:
 # to your environments.
 stages:
     - # The name of the environment to deploy to.
-      name: dev
+      name: test
       # Optional: flag for manual approval action before deployment.
       # requires_approval: true
       # Optional: use test commands to validate this stage of your build.
