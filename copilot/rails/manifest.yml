@@ -14,6 +14,16 @@ http:
   # You can specify a custom health check path. The default is "/".
   # healthcheck: '/'
 
+  healthcheck:
+    path: '/'
+    success_codes: '200'
+    # ref: Amazon ECS でのコンテナデプロイの高速化
+    # https://toris.io/2021/04/speeding-up-amazon-ecs-container-deployments/
+    healthy_threshold: 2
+    unhealthy_threshold: 2
+    interval: 5s
+    timeout: 5s
+
 # Configuration for your containers and service.
 image:
   # Docker build arguments. For additional overrides: https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/#image-build
