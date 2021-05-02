@@ -51,5 +51,6 @@ test:
 production:
   <<: *default
   database: app_production
-  username: app
-  password: <%= ENV['APP_DATABASE_PASSWORD'] %>
+  username: <%= JSON.parse(ENV.fetch('RAILSCLUSTER_SECRET')).fetch('username') %>
+  password: <%= JSON.parse(ENV.fetch('RAILSCLUSTER_SECRET')).fetch('password') %>
+  host: <%= JSON.parse(ENV.fetch('RAILSCLUSTER_SECRET')).fetch('host') %>

@@ -26,9 +26,10 @@ WORKDIR /app
 # Store puma pids file
 RUN mkdir -p tmp/pids
 
-ADD ./ /app
+ADD Gemfile Gemfile.lock ./
 RUN gem update --system &&\
     gem install bundler:$BUNDLER_VERSION &&\
     bundle install --without development test
+ADD ./ ./
 
 CMD bundle exec pumactl start
