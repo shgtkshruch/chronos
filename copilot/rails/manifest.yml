@@ -22,7 +22,7 @@ http:
     healthy_threshold: 2
     unhealthy_threshold: 2
     interval: 5s
-    timeout: 5s
+    timeout: 2s
 
 # Configuration for your containers and service.
 image:
