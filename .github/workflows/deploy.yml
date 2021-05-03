@@ -20,6 +20,13 @@ jobs:
         curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux
         chmod +x copilot-linux
         sudo mv copilot-linux /usr/local/bin/copilot
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.0.1
+        bundler-cache: true 
+    - name: Assets precompile
+      run: |
+        bundle exec rails assets:precompile
     - name: Deploy Rails service to test environment
       run: |
         copilot svc deploy --app chronos --env test --name rails
