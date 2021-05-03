@@ -1,0 +1,25 @@
+name: Deploy service with AWS Copilot
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-1
+    - name: Setup AWS Copilot
+      run: |
+        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux
+        chmod +x copilot-linux
+        sudo mv copilot-linux /usr/local/bin/copilot
+    - name: Deploy Rails service to test environment
+      run: |
+        copilot svc deploy --app chronos --env test --name rails
