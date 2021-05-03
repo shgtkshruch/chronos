@@ -16,6 +16,23 @@ $ docker-compose up -d
 
 Deploy with [AWS Copilot](https://aws.github.io/copilot-cli/).
 
+### Secrets
+
+Save `RAILS_MASTER_KEY` to AWS Systems Manager Parameter Store (SSM).
+
+ref: https://aws.github.io/copilot-cli/docs/developing/secrets/
+
+```sh
+$ aws ssm put-parameter \
+  --name /copilot/applications/chronos/components/rails/RAILS_MASTER_KEY \
+  --value YOUR_RAILS_MASTER_KEY \
+  --type SecureString \
+  --tags Key=copilot-environment,Value=test \
+         Key=copilot-application,Value=chronos
+```
+
+### Infra
+
 ```sh
 # Create application
 $ copilot init
@@ -25,4 +42,11 @@ $ copilot svc init
 
 # Deploy
 $ copilot svc deploy
+```
+
+### Cleaning
+
+```sh
+$ aws ssm delete-parameter --name /copilot/applications/chronos/components/rails/RAILS_MASTER_KEY
+$ copilot app delete
 ```
