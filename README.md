@@ -50,3 +50,13 @@ $ copilot svc deploy
 $ aws ssm delete-parameter --name /copilot/applications/chronos/components/rails/RAILS_MASTER_KEY
 $ copilot app delete
 ```
+
+## Deployment
+
+Running a deployment workflow using [GitHub CLI](https://cli.github.com/).
+
+```sh
+$ gh workflow run
+? Select a workflow  [Use arrows to move, type to filter]
+> Deploy service with AWS Copilot (deploy.yml)
+```
