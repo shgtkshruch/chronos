@@ -12,7 +12,12 @@ http:
   # To match all requests you can use the "/" path.
   path: '/'
   # You can specify a custom health check path. The default is "/".
-  # healthcheck: '/'
+  healthcheck:
+    path: '/'
+    healthy_threshold: 2
+    unhealthy_threshold: 2
+    interval: 5s
+    timeout: 2s
 
 # Configuration for your containers and service.
 image:
