@@ -35,13 +35,16 @@ $ aws ssm put-parameter \
 
 ```sh
 # Create application
-$ copilot init
+$ copilot app init chronos
+
+# Create environment
+$ copilot env init --name dev --profile default --default-config  
 
 # Create service
-$ copilot svc init
+$ copilot svc init --name rails --svc-type "Load Balanced Web Service" --dockerfile Dockerfile.prod --port 3000
 
 # Deploy
-$ copilot svc deploy
+$ copilot svc deploy --name rails --env dev
 ```
 
 ### Cleaning
