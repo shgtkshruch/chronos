@@ -45,9 +45,13 @@ variables:                    # Pass environment variables as key value pairs.
 
 secrets:       # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
 # GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of the SSM parameter.
- RAILS_MASTER_KEY: /copilot/applications/chronos/components/rails/RAILS_MASTER_KEY
 
 # You can override any of the values defined above by environment.
-#environments:
-#  test:
-#    count: 2               # Number of tasks to run for the "test" environment.
+environments:
+  dev:
+    # ref: https://github.com/aws/copilot-cli/issues/2275#issuecomment-833646845
+    secrets:
+      RAILS_MASTER_KEY: /copilot/chronos/dev/secrets/RAILS_MASTER_KEY
+  staging:
+    secrets:
+      RAILS_MASTER_KEY: /copilot/chronos/staging/secrets/RAILS_MASTER_KEY
