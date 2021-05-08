@@ -24,10 +24,10 @@ ref: https://aws.github.io/copilot-cli/docs/developing/secrets/
 
 ```sh
 $ aws ssm put-parameter \
-  --name /copilot/applications/chronos/components/rails/RAILS_MASTER_KEY \
-  --value YOUR_RAILS_MASTER_KEY \
+  --name /copilot/chronos/dev/secrets/RAILS_MASTER_KEY \
+  --value RAILS_MASTER_KEY \
   --type SecureString \
-  --tags Key=copilot-environment,Value=test \
+  --tags Key=copilot-environment,Value=dev \
          Key=copilot-application,Value=chronos
 ```
 
@@ -35,19 +35,22 @@ $ aws ssm put-parameter \
 
 ```sh
 # Create application
-$ copilot init
+$ copilot app init chronos
+
+# Create environment
+$ copilot env init --name dev --profile default --default-config  
 
 # Create service
-$ copilot svc init
+$ copilot svc init --name rails --svc-type "Load Balanced Web Service" --dockerfile Dockerfile.prod --port 3000
 
 # Deploy
-$ copilot svc deploy
+$ copilot svc deploy --name rails --env dev
 ```
 
 ### Cleaning
 
 ```sh
-$ aws ssm delete-parameter --name /copilot/applications/chronos/components/rails/RAILS_MASTER_KEY
+$ aws ssm delete-parameter --name /copilot/chronos/dev/secrets/RAILS_MASTER_KEY
 $ copilot app delete
 ```
 
