@@ -49,20 +49,20 @@ jobs:
           BUNDLER_VERSION=2.2.16
         push: false
         load: true
-        tags: shgtkshruch/chronos:1.0.0
+        tags: ${{ github.repository }}:1.0.0
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
     - name: Check docker images
       run: |
         docker image ls
-    # - name: Migration
-    #   run: |
-    #     # https://aws.github.io/copilot-cli/docs/commands/svc-exec/
-    #     copilot task run \
-    #       --command 'bin/rails db:migrate' \
-    #       --app chronos \
-    #       --env dev \
-    #       --image 
+    - name: Migration
+      run: |
+        # https://aws.github.io/copilot-cli/docs/commands/task-run/
+        copilot task run \
+          --command 'bin/rails db:migrate' \
+          --app chronos \
+          --env dev \
+          --image $GITHUB_REPOSITORY:1.0.0
     # - name: Deploy Rails service to test environment
     #   run: |
     #     copilot svc deploy --app chronos --env test --name rails
