@@ -27,7 +27,7 @@ services:
     <<: *backend
     command: bundle exec rails server -b 0.0.0.0
     ports:
-      - '3000:3000'
+      - '3001:3000'
   runner:
     <<: *backend
     command: /bin/bash
@@ -44,6 +44,12 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - '3306:3306'
+  nginx:
+    image: nginx:stable-alpine
+    volumes:
+      - ./nginx:/etc/nginx/templates
+    ports:
+      - '3000:80'
 
 volumes:
   bundle:
