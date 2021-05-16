@@ -26,8 +26,6 @@ services:
   rails:
     <<: *backend
     command: bundle exec rails server -b 0.0.0.0
-    ports:
-      - '3001:3000'
   runner:
     <<: *backend
     command: /bin/bash
@@ -47,9 +45,11 @@ services:
   nginx:
     image: nginx:stable-alpine
     volumes:
-      - ./nginx:/etc/nginx/templates
+      - ./nginx:/etc/nginx/conf.d
     ports:
       - '3000:80'
+    depends_on:
+      - rails
 
 volumes:
   bundle:
