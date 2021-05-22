@@ -16,21 +16,6 @@ $ docker-compose up -d
 
 Deploy with [AWS Copilot](https://aws.github.io/copilot-cli/).
 
-### Secrets
-
-Save `RAILS_MASTER_KEY` to AWS Systems Manager Parameter Store (SSM).
-
-ref: https://aws.github.io/copilot-cli/docs/developing/secrets/
-
-```sh
-$ aws ssm put-parameter \
-  --name /copilot/chronos/dev/secrets/RAILS_MASTER_KEY \
-  --value RAILS_MASTER_KEY \
-  --type SecureString \
-  --tags Key=copilot-environment,Value=dev \
-         Key=copilot-application,Value=chronos
-```
-
 ### Infra
 
 ```sh
@@ -38,7 +23,10 @@ $ aws ssm put-parameter \
 $ copilot app init chronos
 
 # Create environment
-$ copilot env init --name dev --profile default --default-config  
+$ copilot env init --name dev --profile default --default-config
+
+# Set secretes
+$ copilot secret init --app chronos --name RAILS_MASTER_KEY
 
 # Create service
 $ copilot svc init --name rails --svc-type "Load Balanced Web Service" --dockerfile Dockerfile.prod --port 3000
