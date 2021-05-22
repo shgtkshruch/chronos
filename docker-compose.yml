@@ -26,11 +26,11 @@ services:
   rails:
     <<: *backend
     command: bundle exec rails server -b 0.0.0.0
+    ports:
+      - '3002:3000'
   runner:
     <<: *backend
     command: /bin/bash
-    ports:
-      - '3002:3002'
   mysql:
     image: mysql:8.0.22
     command: --default-authentication-plugin=mysql_native_password
