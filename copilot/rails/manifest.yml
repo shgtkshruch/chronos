@@ -44,7 +44,7 @@ sidecars:
     image: 353381651656.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/nginx:latest
     port: 80
     variables:
-      RAILS_HOST: http://rails.chronos.local:3000
+      RAILS_HOST: http://localhost:3000
 
 # Optional fields for more advanced use-cases.
 #
