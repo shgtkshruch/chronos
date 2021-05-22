@@ -19,6 +19,9 @@ http:
     interval: 5s
     timeout: 2s
 
+  # ロードバランサーのターゲットコンテナは Service のコンテナの代わりにサイドカーの`nginx`を指定
+  targetContainer: 'nginx'
+
 # Configuration for your containers and service.
 image:
   # Docker build arguments. For additional overrides: https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/#image-build
@@ -30,13 +33,18 @@ image:
   # Port exposed through your container to route traffic to it.
   port: 3000
 
-command: bundle exec pumactl start
-
 cpu: 256       # Number of CPU units for the task.
 memory: 512    # Amount of memory in MiB used by the task.
 count: 1       # Number of tasks that should be running in your service.
 
 exec: true     # Enable running commands in your container.
+
+sidecars:
+  nginx:
+    image: 353381651656.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/nginx:latest
+    port: 80
+    variables:
+      RAILS_HOST: http://localhost:3000
 
 # Optional fields for more advanced use-cases.
 #
