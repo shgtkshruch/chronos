@@ -43,9 +43,11 @@ services:
     ports:
       - '3306:3306'
   nginx:
-    image: nginx:stable-alpine
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    environment:
+      RAILS_HOST: http://rails:3000
     ports:
       - '3000:80'
     depends_on:
