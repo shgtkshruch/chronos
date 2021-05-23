@@ -14,7 +14,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -\
 
 RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrade &&\
   DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends\
-    build-essential\
+    build-essential vim\
     nodejs\
     yarn=$YARN_VERSION-1 &&\
     apt-get clean &&\
