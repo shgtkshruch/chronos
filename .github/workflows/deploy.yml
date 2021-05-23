@@ -32,6 +32,7 @@ jobs:
       run: |
         bin/rails assets:precompile
 
+    # Build Docker image
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
@@ -62,20 +63,25 @@ jobs:
         tags: ${{ steps.login-ecr.outputs.registry }}/chronos/rails:${{ github.sha }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+    # Temp fix
+    # https://github.com/docker/build-push-action/issues/252
+    # https://github.com/moby/buildkit/issues/1896
     - name: Move cache
       run: |
         rm -rf /tmp/.buildx-cache
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-    # - name: Deploy Rails service to dev environment
-    #   run: |
-    #     copilot svc deploy --app chronos --env dev --name rails
+    - name: Deploy Rails service to dev environment
+      run: |
+        copilot svc deploy --app chronos --env dev --name rails
+  
     # TODO: Run migratoin before copilot sevice deployment
-    # - name: Excecute database migration
-    #   run: |
-    #     # https://aws.github.io/copilot-cli/docs/commands/svc-exec/
-    #     copilot svc exec \
-    #       --command 'bin/rails db:migrate' \
-    #       --app chronos \
-    #       --name rails \
-    #       --env dev
+    - name: Excecute database migration
+      run: |
+        # https://aws.github.io/copilot-cli/docs/commands/svc-exec/
+        copilot svc exec \
+          --command 'bin/rails db:migrate' \
+          --app chronos \
+          --name rails \
+          --env dev
