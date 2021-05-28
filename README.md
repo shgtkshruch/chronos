@@ -33,27 +33,22 @@ $ docker push aws_account_id.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/nginx
 ### Rails
 
 ```sh
-# Create application
-$ copilot app init chronos
+$ ./scripts/copilot-init.sh <env name>
+```
 
-# Create environment
-$ copilot env init --name dev --profile default --default-config
+### Switch maintenance
 
-# Set secretes
-$ copilot secret init --app chronos --name RAILS_MASTER_KEY
+1. Add listener rule to show maintenance to ALB that created by aws copilot.
 
-# Create service
-$ copilot svc init --name rails --svc-type "Load Balanced Web Service" --dockerfile Dockerfile.prod --port 3000
-
-# Deploy
-$ copilot svc deploy --name rails --env dev
+2. Run command to switch maintenacne on/off.
+```sh
+$ ./scripts/switch-maintenance.sh <env name>
 ```
 
 ### Cleaning
 
 ```sh
-$ aws ssm delete-parameter --name /copilot/chronos/dev/secrets/RAILS_MASTER_KEY
-$ copilot app delete
+$ ./scripts/copilot-delete.rb
 ```
 
 ## Deployment
