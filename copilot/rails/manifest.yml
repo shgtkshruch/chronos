@@ -40,6 +40,25 @@ sidecars:
     port: 80
     variables:
       RAILS_HOST: http://localhost:3000
+  datadog-agent:
+    image: datadog/agent:latest
+    port: 8126
+    secrets:
+      DD_API_KEY: /copilot/chronos/dev/secrets/DATADOG_API_KEY
+    variables:
+      ECS_FARGATE: true
+      DD_APM_ENABLED: true
+
+logging:
+  destination:
+    Name: datadog
+    Host: http-intake.logs.datadoghq.com
+    TLS: 'on'
+    dd_service: chronos-rails
+    dd_source: chronos-rails
+    provider: ecs
+  secretOptions:
+    apikey: /copilot/chronos/dev/secrets/DATADOG_API_KEY
 
 # Optional fields for more advanced use-cases.
 #
