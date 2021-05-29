@@ -98,11 +98,22 @@ jobs:
 
     - name: Replace docker image tag to github sha
       run: |
-        sed -i -e 's/<image_tag>/${{ github.sha }}/' copilot/rails/manifest.yml
+        services=$(copilot svc ls --json | jq -r '.services[] .name')
+        jobs=$(copilot job ls --json | jq -r '.jobs[] .name')
+
+        for workload in $services $jobs
+        do
+          manifest_path="copilot/$workload/manifest.yml"
+          sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
+        done
 
     - name: Deploy Rails service to dev environment
       run: |
         copilot svc deploy --app chronos --env dev --name rails
+
+    - name: Deploy scheduled jobs to dev environment
+      run: |
+        copilot job deploy --app chronos --env dev
   
     # TODO: Run migratoin before copilot sevice deployment
     - name: Excecute database migration
