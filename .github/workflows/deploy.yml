@@ -56,9 +56,6 @@ jobs:
         builder: ${{ steps.buildx.outputs.name }}
         context: .
         file: ./Dockerfile.prod
-        build-args: |
-          RUBY_VERSION=3.0.1
-          BUNDLER_VERSION=2.2.16
         push: true
         tags: ${{ steps.login-ecr.outputs.registry }}/chronos/rails:${{ github.sha }}
         cache-from: type=local,src=/tmp/.buildx-cache
