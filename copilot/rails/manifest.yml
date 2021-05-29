@@ -24,12 +24,7 @@ http:
 
 # Configuration for your containers and service.
 image:
-  # Docker build arguments. For additional overrides: https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/#image-build
-  build:
-    dockerfile: ./Dockerfile.prod
-    args:
-      RUBY_VERSION: 3.0.1
-      BUNDLER_VERSION: 2.2.16
+  location: 353381651656.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/rails:latest
   # Port exposed through your container to route traffic to it.
   port: 3000
 
