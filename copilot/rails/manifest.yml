@@ -24,7 +24,7 @@ http:
 
 # Configuration for your containers and service.
 image:
-  location: 353381651656.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/rails:latest
+  location: 353381651656.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/rails:<image_tag>
   # Port exposed through your container to route traffic to it.
   port: 3000
 

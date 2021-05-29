@@ -96,6 +96,10 @@ jobs:
         chmod +x copilot-linux
         sudo mv copilot-linux /usr/local/bin/copilot
 
+    - name: Replace docker image tag to github sha
+      run: |
+        sed -i -e 's/<image_tag>/${{ github.sha }}/' copilot/rails/manifest.yml
+
     - name: Deploy Rails service to dev environment
       run: |
         copilot svc deploy --app chronos --env dev --name rails
