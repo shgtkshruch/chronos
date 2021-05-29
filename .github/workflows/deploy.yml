@@ -44,6 +44,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
+        file: ./Dockerfile.prod
         target: bundle
         cache-from: type=local,src=/tmp/.buildx-cache/bundle
         cache-to: type=local,dest=/tmp/.buildx-cache-new/bundle
@@ -52,6 +53,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
+        file: ./Dockerfile.prod
         target: npm
         cache-from: type=local,src=/tmp/.buildx-cache/npm
         cache-to: type=local,dest=/tmp/.buildx-cache-new/npm
