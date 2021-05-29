@@ -54,6 +54,10 @@ RUN SECRET_KEY_BASE=dummy bin/rails assets:precompile \
 
 FROM base AS main
 
+# Add packages
+RUN apt-get update && apt-get install -yq --no-install-recommends \
+      libmariadb-dev
+
 # Store puma pids file
 RUN mkdir -p tmp/pids
 
