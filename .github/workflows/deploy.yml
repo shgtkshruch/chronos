@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -80,6 +80,12 @@ jobs:
         rm -rf /tmp/.buildx-cache
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
     - name: Deploy Rails service to dev environment
       run: |
         copilot svc deploy --app chronos --env dev --name rails
