@@ -23,15 +23,6 @@ jobs:
         chmod +x copilot-linux
         sudo mv copilot-linux /usr/local/bin/copilot
 
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.0.1
-        bundler-cache: true
-
-    - name: Assets precompile
-      run: |
-        bin/rails assets:precompile
-
     # Build Docker image
     - name: Login to Amazon ECR
       id: login-ecr
