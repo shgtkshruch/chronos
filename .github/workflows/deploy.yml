@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -16,21 +16,6 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-northeast-1
-
-    - name: Setup AWS Copilot
-      run: |
-        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux
-        chmod +x copilot-linux
-        sudo mv copilot-linux /usr/local/bin/copilot
-
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.0.1
-        bundler-cache: true
-
-    - name: Assets precompile
-      run: |
-        bin/rails assets:precompile
 
     # Build Docker image
     - name: Login to Amazon ECR
@@ -48,6 +33,24 @@ jobs:
         key: ${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-
+
+    - name: Build bundle stage
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile.prod
+        target: bundle
+        cache-from: type=local,src=/tmp/.buildx-cache/bundle
+        cache-to: type=local,dest=/tmp/.buildx-cache-new/bundle
+
+    - name: Build npm stage
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile.prod
+        target: npm
+        cache-from: type=local,src=/tmp/.buildx-cache/npm
+        cache-to: type=local,dest=/tmp/.buildx-cache-new/npm
   
     - name: Build docker image
       id: docker-build
@@ -56,12 +59,11 @@ jobs:
         builder: ${{ steps.buildx.outputs.name }}
         context: .
         file: ./Dockerfile.prod
-        build-args: |
-          RUBY_VERSION=3.0.1
-          BUNDLER_VERSION=2.2.16
         push: true
         tags: ${{ steps.login-ecr.outputs.registry }}/chronos/rails:${{ github.sha }}
-        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-from: |
+          type=local,src=/tmp/.buildx-cache-new/bundle
+          type=local,src=/tmp/.buildx-cache-new/npm
         cache-to: type=local,dest=/tmp/.buildx-cache-new
 
     # Temp fix
@@ -71,6 +73,32 @@ jobs:
       run: |
         rm -rf /tmp/.buildx-cache
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-1
+
+    - name: Setup AWS Copilot
+      run: |
+        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux
+        chmod +x copilot-linux
+        sudo mv copilot-linux /usr/local/bin/copilot
+
+    - name: Replace docker image tag to github sha
+      run: |
+        sed -i -e 's/<image_tag>/${{ github.sha }}/' copilot/rails/manifest.yml
 
     - name: Deploy Rails service to dev environment
       run: |
