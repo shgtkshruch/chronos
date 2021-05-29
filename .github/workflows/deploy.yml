@@ -74,7 +74,7 @@ jobs:
         rm -rf /tmp/.buildx-cache
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-  deploy:
+  deploy-services:
     needs: [build]
     runs-on: ubuntu-latest
     environment:
@@ -98,11 +98,18 @@ jobs:
 
     - name: Replace docker image tag to github sha
       run: |
-        sed -i -e 's/<image_tag>/${{ github.sha }}/' copilot/rails/manifest.yml
+        services=$(copilot svc ls --json | jq -r '.services[] .name')
+
+        for workload in $services
+        do
+          manifest_path="copilot/$workload/manifest.yml"
+          sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
+        done
 
     - name: Deploy Rails service to dev environment
       run: |
         copilot svc deploy --app chronos --env dev --name rails
+
   
     # TODO: Run migratoin before copilot sevice deployment
     - name: Excecute database migration
@@ -113,3 +120,39 @@ jobs:
           --app chronos \
           --name rails \
           --env dev
+
+  deploy-jobs:
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-1
+
+    - name: Setup AWS Copilot
+      run: |
+        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux
+        chmod +x copilot-linux
+        sudo mv copilot-linux /usr/local/bin/copilot
+
+    - name: Replace docker image tag to github sha
+      run: |
+        jobs=$(copilot job ls --json | jq -r '.jobs[] .name')
+
+        for workload in $jobs
+        do
+          manifest_path="copilot/$workload/manifest.yml"
+          sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
+        done
+
+    - name: Deploy scheduled jobs to dev environment
+      run: |
+        copilot job deploy --app chronos --env dev
