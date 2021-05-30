@@ -42,7 +42,7 @@ $ ./scripts/copilot-init.sh <env name>
 
 2. Run command to switch maintenacne on/off.
 ```sh
-$ ./scripts/switch-maintenance.sh <env name>
+$ ./scripts/switch-maintenance.sh <env> <on or off>
 ```
 
 ### Cleaning
