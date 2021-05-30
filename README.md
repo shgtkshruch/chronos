@@ -14,8 +14,6 @@ $ docker-compose up -d
 
 ## AWS
 
-Deploy with [AWS Copilot](https://aws.github.io/copilot-cli/).
-
 ### Nginx
 
 Build Nginx container, and push to ECR.
@@ -30,15 +28,17 @@ $ docker build -f nginx/Dockerfile -t aws_account_id.dkr.ecr.ap-northeast-1.amaz
 $ docker push aws_account_id.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/nginx
 ```
 
-### Rails
+### Copilot
+
+Create AWS resources (ex. VPC, ALB, Farge, RDS) with [AWS Copilot](https://aws.github.io/copilot-cli/).
 
 ```sh
-$ ./scripts/copilot-init.sh <env name>
+$ ./scripts/copilot-init.sh <env> <domain>
 ```
 
 ### Switch maintenance
 
-1. Add listener rule to show maintenance to ALB that created by aws copilot.
+1. Add listener rule to show maintenance to ALB that created by AWS Copilot.
 
 2. Run command to switch maintenacne on/off.
 ```sh
@@ -48,7 +48,7 @@ $ ./scripts/switch-maintenance.sh <env> <on or off>
 ### Cleaning
 
 ```sh
-$ ./scripts/copilot-delete.rb
+$ ./scripts/copilot-delete.sh
 ```
 
 ## Deployment
