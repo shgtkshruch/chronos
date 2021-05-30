@@ -40,6 +40,7 @@ sidecars:
     port: 80
     variables:
       RAILS_HOST: http://localhost:3000
+  # https://docs.datadoghq.com/integrations/ecs_fargate/?tab=fluentbitandfirelens#trace-collection
   datadog-agent:
     image: datadog/agent:latest
     port: 8126
