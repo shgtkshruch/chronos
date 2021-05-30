@@ -3,26 +3,36 @@
 set -e -u
 
 env=$1
+command=$2
 
-FIRST_PRIORITY=1
-SECOND_PRIORITY=50000
+echo "maincenance ${command}"
 
-vpc_id=$(copilot env show --name $env --json | jq '.environmentVPC.id')
-elb=$(aws elbv2 describe-load-balancers | jq ".LoadBalancers[] | select(.VpcId == $vpc_id)" | jq -r ".LoadBalancerArn")
-listener=$(aws elbv2 describe-listeners --load-balancer-arn $elb | jq -r '.Listeners[].ListenerArn')
+if [ $command = 'on' ]
+then
+  DEFAULT_PRIORITY=1000
+  MAINTENANCE_PRIORITY=1
+else
+  DEFAULT_PRIORITY=1
+  MAINTENANCE_PRIORITY=1000
+fi
 
-rules=$(aws elbv2 describe-rules --listener-arn $listener)
-first_rule=$(echo $rules | jq -r '.Rules[] | select(.Priority == "'"$FIRST_PRIORITY"'") | .RuleArn')
-second_rule=$(echo $rules | jq -r '.Rules[] | select(.Priority == "'"$SECOND_PRIORITY"'") | .RuleArn')
+elb=$(copilot env show --name dev --resources --json | jq -r '.resources[] | select(.type == "AWS::ElasticLoadBalancingV2::LoadBalancer") | .physicalID')
+listeners=$(aws elbv2 describe-listeners --load-balancer-arn $elb | jq -r '.Listeners[]' | jq '.')
+listener443=$(echo $listeners | jq -r 'select( .Port == 443).ListenerArn')
+
+rules=$(aws elbv2 describe-rules --listener-arn $listener443)
+
+default_rule=$(echo $rules | jq -r '.Rules[] | select(.Conditions[1].Field == "host-header").RuleArn')
+maintennce_rule=$(echo $rules | jq -r '.Rules[] | select(.Actions[].Type == "fixed-response").RuleArn')
 
 rules=$(aws elbv2 set-rule-priorities --rule-priorities '[
   {
-    "RuleArn": "'"$first_rule"'",
-    "Priority": '$SECOND_PRIORITY'
+    "RuleArn": "'"$default_rule"'",
+    "Priority": '$DEFAULT_PRIORITY'
   },
   {
-    "RuleArn": "'"$second_rule"'",
-    "Priority": '$FIRST_PRIORITY'
+    "RuleArn": "'"$maintennce_rule"'",
+    "Priority": '$MAINTENANCE_PRIORITY'
   }
 ]')
 echo $rules
