@@ -49,6 +49,8 @@ sidecars:
     variables:
       ECS_FARGATE: true
       DD_APM_ENABLED: true
+      DD_SERVICE: chronos-rails
+      DD_DOCKER_ENV_AS_TAGS: true
 
 logging:
   destination:
@@ -64,7 +66,7 @@ logging:
 # Optional fields for more advanced use-cases.
 #
 variables:                    # Pass environment variables as key value pairs.
- RAILS_LOG_TO_STDOUT: true
+  RAILS_LOG_TO_STDOUT: true
 
 secrets:       # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
 # GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of the SSM parameter.
@@ -72,9 +74,16 @@ secrets:       # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
 # You can override any of the values defined above by environment.
 environments:
   dev:
-    # ref: https://github.com/aws/copilot-cli/issues/2275#issuecomment-833646845
+    sidecars:
+      datadog-agent:
+        variables:
+          DD_ENV: dev
     secrets:
       RAILS_MASTER_KEY: /copilot/chronos/dev/secrets/RAILS_MASTER_KEY
   staging:
+    sidecars:
+      datadog-agent:
+        variables:
+          DD_ENV: staging
     secrets:
       RAILS_MASTER_KEY: /copilot/chronos/staging/secrets/RAILS_MASTER_KEY
