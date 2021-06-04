@@ -14,7 +14,14 @@ echo "(2/5) Create environment"
 copilot env init --name $env --profile default --default-config
 
 echo "(3/5) Set secretes"
-copilot secret init --app $app_name --name RAILS_MASTER_KEY
+secret=$(aws ssm get-parameters --name /copilot/chronos/dev/secrets/RAILS_MASTER_KEY | jq '.Parameters[].Name')
+
+if [ -z $secret ]
+then
+  copilot secret init --app $app_name --name RAILS_MASTER_KEY
+else
+  echo "Skip to set secrets"
+fi
 
 echo "(4/5) Create service"
 copilot svc init \
