@@ -30,12 +30,12 @@ copilot svc init \
   --dockerfile Dockerfile.prod \
   --port 3000
 
-echo "(6/7) Create job"
+echo "(5/6) Create job"
 copilot job init \
   --app $app_name \
   --image test \
   --name slack-notification \
   --schedule "cron(0/5 * * * ? *)"
 
-echo "(7/7) Execute deploy job in GitHub Actons"
+echo "(6/6) Execute deploy job in GitHub Actons"
 gh workflow run --ref main
