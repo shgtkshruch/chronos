@@ -1,1 +1,13 @@
 Hello Rails!
+<dl>
+  <dt>Scheme</dt>
+  <dd><%= request.scheme %></dt>
+  <dt>- Host</dt>
+  <dd><%= request.host %></dd>
+  <dt>- IP Address</dt>
+  <dd><%= request.remote_ip %><dt>
+  <dt>- User Agent</dt>
+  <dd><%= request.user_agent %>
+</dl>
+
+- <%= link_to "People Page", people_path %>
