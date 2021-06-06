@@ -16,16 +16,10 @@ $ docker-compose up -d
 
 ### Nginx
 
-Build Nginx container, and push to ECR.
+Build Nginx docker image, and push to ECR.
 
 ```sh
-$ aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin aws_account_id.dkr.ecr.ap-northeast-1.amazonaws.com
-
-$ aws ecr create-repository --repository-name chronos/nginx
-
-$ docker build -f nginx/Dockerfile -t aws_account_id.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/nginx nginx
-
-$ docker push aws_account_id.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/nginx
+./scripts/ecr-nginx.sh
 ```
 
 ### Copilot
