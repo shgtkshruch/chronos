@@ -6,7 +6,8 @@ aws_account_id=353381651656
 ecr_endpoint=$aws_account_id.dkr.ecr.ap-northeast-1.amazonaws.com
 app_name=chronos
 repo_name=$app_name/nginx
-tag_name=$ecr_endpoint/$repo_name
+version=$(git rev-parse HEAD)
+tag_name=$ecr_endpoint/$repo_name:$version
 
 echo "(1/4) Login ECR"
 aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin $ecr_endpoint
