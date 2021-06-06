@@ -14,7 +14,14 @@ echo "(2/5) Create environment"
 copilot env init --name $env --profile default --default-config
 
 echo "(3/5) Set secretes"
-copilot secret init --app $app_name --name RAILS_MASTER_KEY
+secret=$(aws ssm get-parameters --name /copilot/chronos/dev/secrets/RAILS_MASTER_KEY | jq '.Parameters[].Name')
+
+if [ -z $secret ]
+then
+  copilot secret init --app $app_name --name RAILS_MASTER_KEY
+else
+  echo "Skip to set secrets"
+fi
 
 echo "(4/5) Create service"
 copilot svc init \
@@ -23,12 +30,12 @@ copilot svc init \
   --dockerfile Dockerfile.prod \
   --port 3000
 
-echo "(6/7) Create job"
+echo "(5/6) Create job"
 copilot job init \
   --app $app_name \
   --image test \
   --name slack-notification \
   --schedule "cron(0/5 * * * ? *)"
 
-echo "(7/7) Execute deploy job in GitHub Actons"
+echo "(6/6) Execute deploy job in GitHub Actons"
 gh workflow run --ref main
