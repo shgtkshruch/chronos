@@ -1,0 +1,15 @@
+Resources:
+  FirehosePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Action:
+          - firehose:PutRecordBatch
+          Resource: "*"
+Outputs:
+  FirehosePolicy:
+    Description: An addon ManagedPolicy gets used by the ECS task role
+    Value: !Ref FirehosePolicy
