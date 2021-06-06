@@ -8,4 +8,8 @@ Rails.application.configure do
       params: event.payload[:params]
     }
   end
+
+  # Exclude heathcheck logs from rails logs
+  # https://github.com/linqueta/rails-healthcheck#ignoring-logs
+  config.lograge.ignore_actions = [Healthcheck::CONTROLLER_ACTION]
 end
