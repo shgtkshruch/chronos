@@ -10,7 +10,7 @@ type: Scheduled Job
 on:
   # The scheduled trigger for your job. You can specify a Unix cron schedule or keyword (@weekly) or a rate (@every 1h30m)
   # AWS Schedule Expressions are also accepted: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
-  schedule: "cron(0/5 * * * ? *)"
+  schedule: "cron(0 * * * ? *)"
 #retries: 3        # Optional. The number of times to retry the job before failing.
 timeout: 5m    # Optional. The timeout after which to stop the job if it's still running. You can use the units (h, m, s).
 

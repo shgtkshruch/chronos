@@ -35,7 +35,7 @@ copilot job init \
   --app $app_name \
   --image test \
   --name slack-notification \
-  --schedule "cron(0/5 * * * ? *)"
+  --schedule "cron(0 * * * ? *)"
 
 echo "(6/6) Execute deploy job in GitHub Actons"
 gh workflow run --ref main
