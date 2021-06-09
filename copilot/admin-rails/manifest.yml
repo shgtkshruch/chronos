@@ -3,14 +3,14 @@
 #  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
 
 # Your service name will be used in naming your resources like log groups, ECS services, etc.
-name: rails
+name: admin-rails
 type: Load Balanced Web Service
 
 # Distribute traffic to your service.
 http:
   # Requests to this path will be forwarded to your service.
   # To match all requests you can use the "/" path.
-  path: '/'
+  path: 'admin'
   # You can specify a custom health check path. The default is "/".
   healthcheck:
     path: '/healthcheck'
@@ -49,7 +49,7 @@ sidecars:
     variables:
       ECS_FARGATE: true
       DD_APM_ENABLED: true
-      DD_SERVICE: chronos-rails
+      DD_SERVICE: chronos-admin-rails
       DD_DOCKER_ENV_AS_TAGS: true
 
 logging:
