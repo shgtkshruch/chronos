@@ -1,6 +1,7 @@
 Rails.application.configure do
   config.lograge.enabled = true
   config.lograge.formatter = Lograge::Formatters::Json.new
+  config.lograge.ignore_actions = [Healthcheck::CONTROLLER_ACTION]
 
   # 現在のスレッドのトレース情報を取得
   correlation = Datadog.tracer.active_correlation
