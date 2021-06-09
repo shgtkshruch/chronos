@@ -65,7 +65,9 @@ variables:                    # Pass environment variables as key value pairs.
   RAILS_LOG_TO_STDOUT: true
 
 secrets:       # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
-# GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of the SSM parameter.
+  # Get RDS connection configuration from copilot command bellow
+  # `copilot svc show -n rails --json | jq '.secrets[] | select(.name == "RAILSCLUSTER_SECRET").valueFrom'`
+  RAILSCLUSTER_SECRET:
 
 # You can override any of the values defined above by environment.
 environments:
