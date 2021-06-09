@@ -23,9 +23,15 @@ else
   echo "Skip to set secrets"
 fi
 
-echo "(4/5) Create service"
+echo "(4/5) Create services"
 copilot svc init \
   --name rails \
+  --svc-type "Load Balanced Web Service" \
+  --dockerfile Dockerfile.prod \
+  --port 3000
+
+copilot svc init \
+  --name admin-rails \
   --svc-type "Load Balanced Web Service" \
   --dockerfile Dockerfile.prod \
   --port 3000

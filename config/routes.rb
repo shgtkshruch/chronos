@@ -4,4 +4,5 @@ Rails.application.routes.draw do
   root 'pages#main'
 
   resources :people
+  get '/admin', to: 'pages#admin'
 end

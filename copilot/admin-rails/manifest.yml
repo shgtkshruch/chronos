@@ -1,0 +1,87 @@
+# The manifest for the "rails" service.
+# Read the full specification for the "Load Balanced Web Service" type at:
+#  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
+
+# Your service name will be used in naming your resources like log groups, ECS services, etc.
+name: admin-rails
+type: Load Balanced Web Service
+
+# Distribute traffic to your service.
+http:
+  # Requests to this path will be forwarded to your service.
+  # To match all requests you can use the "/" path.
+  path: 'admin'
+  # You can specify a custom health check path. The default is "/".
+  healthcheck:
+    path: '/healthcheck'
+    healthy_threshold: 2
+    unhealthy_threshold: 2
+    interval: 5s
+    timeout: 2s
+
+  # ロードバランサーのターゲットコンテナは Service のコンテナの代わりにサイドカーの`nginx`を指定
+  targetContainer: 'nginx'
+
+# Configuration for your containers and service.
+image:
+  location: 353381651656.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/rails:<image_tag>
+  # Port exposed through your container to route traffic to it.
+  port: 3000
+
+cpu: 256       # Number of CPU units for the task.
+memory: 512    # Amount of memory in MiB used by the task.
+count: 1       # Number of tasks that should be running in your service.
+
+exec: true     # Enable running commands in your container.
+
+sidecars:
+  nginx:
+    image: 353381651656.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/nginx:latest
+    port: 80
+    variables:
+      RAILS_HOST: http://localhost:3000
+  # https://docs.datadoghq.com/integrations/ecs_fargate/?tab=fluentbitandfirelens#trace-collection
+  datadog-agent:
+    image: datadog/agent:latest
+    port: 8126
+    secrets:
+      DD_API_KEY: /copilot/chronos/dev/secrets/DATADOG_API_KEY
+    variables:
+      ECS_FARGATE: true
+      DD_APM_ENABLED: true
+      DD_SERVICE: chronos-admin-rails
+      DD_DOCKER_ENV_AS_TAGS: true
+
+logging:
+  destination:
+    # https://docs.aws.amazon.com/AmazonECS/latest/userguide/firelens-example-taskdefs.html#firelens-example-firehose
+    Name: firehose
+    region: ap-northeast-1
+    delivery_stream: chronos-rails-datadog
+
+# Optional fields for more advanced use-cases.
+#
+variables:                    # Pass environment variables as key value pairs.
+  RAILS_LOG_TO_STDOUT: true
+
+secrets:       # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
+  # Get RDS connection configuration from copilot command bellow
+  # `copilot svc show -n rails --json | jq '.secrets[] | select(.name == "RAILSCLUSTER_SECRET").valueFrom'`
+  RAILSCLUSTER_SECRET: <RAILSCLUSTER_SECRET>
+
+# You can override any of the values defined above by environment.
+environments:
+  dev:
+    sidecars:
+      datadog-agent:
+        variables:
+          DD_ENV: dev
+    secrets:
+      RAILS_MASTER_KEY: /copilot/chronos/dev/secrets/RAILS_MASTER_KEY
+  staging:
+    sidecars:
+      datadog-agent:
+        variables:
+          DD_ENV: staging
+    secrets:
+      RAILS_MASTER_KEY: /copilot/chronos/staging/secrets/RAILS_MASTER_KEY
