@@ -48,9 +48,11 @@ sidecars:
       DD_API_KEY: /copilot/chronos/dev/secrets/DATADOG_API_KEY
     variables:
       ECS_FARGATE: true
+      DD_LOGS_ENABLED: true
+      DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL: true
       DD_APM_ENABLED: true
-      DD_SERVICE: chronos-rails
       DD_DOCKER_ENV_AS_TAGS: true
+      DD_SERVICE: chronos-rails
 
 logging:
   destination:
