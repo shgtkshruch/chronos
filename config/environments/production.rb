@@ -117,4 +117,12 @@ Rails.application.configure do
   # config.active_record.database_selector = { delay: 2.seconds }
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
+
+  # Datadog
+  # Ignore health check logs
+  # https://github.com/linqueta/rails-healthcheck#ignoring-logs
+  filter = Datadog::Pipeline::SpanFilter.new do |span|
+    span.name == 'rack.request' && span.get_tag('http.url') == Healthcheck.configuration.route
+  end
+  Datadog::Pipeline.before_flush(filter)
 end
