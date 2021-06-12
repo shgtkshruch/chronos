@@ -7,11 +7,26 @@ domain=$2
 
 app_name=chronos
 
-echo "(1/5) Create application"
-copilot app init $app_name --domain $domain
+application=$(copilot app ls)
 
-echo "(2/5) Create environment"
-copilot env init --name $env --profile default --default-config
+if [ -z $application ]
+then
+  echo "(1/5) Create application"
+  copilot app init $app_name --domain $domain
+else
+  echo "(1/5) Skip: Application already exist"
+fi
+
+environment=$(copilot env ls | grep $env)
+
+if [ -z $environment ]
+then
+  echo "(2/5) Create environment"
+  copilot env init --name $env --profile default --default-config
+else
+  echo "(2/5) Skip: Environment $env already exist"
+fi
+
 
 echo "(3/5) Set secretes"
 secret=$(aws ssm get-parameters --name /copilot/chronos/dev/secrets/RAILS_MASTER_KEY | jq '.Parameters[].Name')
