@@ -65,7 +65,6 @@ logging:
   enableMetadata: true
   secretOptions:
     apikey: /copilot/chronos/dev/secrets/DATADOG_API_KEY
-  configFilePath: /fluent-bit/configs/parse-json.conf
 
 # Optional fields for more advanced use-cases.
 #
