@@ -70,6 +70,7 @@ logging:
 #
 variables:                    # Pass environment variables as key value pairs.
   RAILS_LOG_TO_STDOUT: true
+  RAILS_SERVE_STATIC_FILES: true
   DD_SERVICE: chronos-rails
   DD_VERSION: 1.0.0
 
