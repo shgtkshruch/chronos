@@ -4,6 +4,7 @@ set -e -u
 
 env=$1
 domain=$2
+branch="${3:-main}"
 
 app_name=chronos
 
@@ -59,4 +60,4 @@ copilot job init \
   --schedule "cron(0 * * * ? *)"
 
 echo "(6/6) Execute deploy job in GitHub Actons"
-gh workflow run --ref main
+gh workflow run --ref $branch
