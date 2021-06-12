@@ -56,10 +56,15 @@ sidecars:
 
 logging:
   destination:
-    # https://docs.aws.amazon.com/AmazonECS/latest/userguide/firelens-example-taskdefs.html#firelens-example-firehose
-    Name: firehose
-    region: ap-northeast-1
-    delivery_stream: chronos-rails-datadog
+    Name: datadog
+    Host: http-intake.logs.datadoghq.com
+    TLS: 'on'
+    dd_service: chronos-rails
+    dd_source: ruby
+    provider: ecs
+  enableMetadata: true
+  secretOptions:
+    apikey: /copilot/chronos/dev/secrets/DATADOG_API_KEY
 
 # Optional fields for more advanced use-cases.
 #
