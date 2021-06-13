@@ -53,7 +53,6 @@ Rails.application.configure do
   config.log_level = :info
 
   # Prepend all log lines with the following tags.
-  config.log_tags = [ :request_id ]
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
@@ -82,7 +81,7 @@ Rails.application.configure do
   config.active_support.disallowed_deprecation_warnings = []
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
+  # config.log_formatter = ::Logger::Formatter.new
 
   # Use a different logger for distributed setups.
   # require "syslog/logger"
@@ -117,4 +116,12 @@ Rails.application.configure do
   # config.active_record.database_selector = { delay: 2.seconds }
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
+
+  # Datadog
+  # Ignore health check logs
+  # https://github.com/linqueta/rails-healthcheck#ignoring-logs
+  filter = Datadog::Pipeline::SpanFilter.new do |span|
+    span.name == 'rack.request' && span.get_tag('http.url') == Healthcheck.configuration.route
+  end
+  Datadog::Pipeline.before_flush(filter)
 end
