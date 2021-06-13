@@ -48,21 +48,34 @@ sidecars:
       DD_API_KEY: /copilot/chronos/dev/secrets/DATADOG_API_KEY
     variables:
       ECS_FARGATE: true
+      DD_LOGS_ENABLED: true
+      DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL: true
       DD_APM_ENABLED: true
-      DD_SERVICE: chronos-admin-rails
       DD_DOCKER_ENV_AS_TAGS: true
+      DD_SERVICE: chronos-admin-rails
 
 logging:
   destination:
-    # https://docs.aws.amazon.com/AmazonECS/latest/userguide/firelens-example-taskdefs.html#firelens-example-firehose
-    Name: firehose
-    region: ap-northeast-1
-    delivery_stream: chronos-rails-datadog
+    Name: datadog
+    Host: http-intake.logs.datadoghq.com
+    TLS: 'on'
+    dd_service: chronos-rails
+    dd_source: ruby
+    provider: ecs
+  enableMetadata: true
+  secretOptions:
+    apikey: /copilot/chronos/dev/secrets/DATADOG_API_KEY
+  # To parse Rails logs formatted as JSON by Lograge
+  # https://github.com/aws-samples/amazon-ecs-firelens-examples/tree/mainline/examples/fluent-bit/parse-json
+  configFilePath: /fluent-bit/configs/parse-json.conf
 
 # Optional fields for more advanced use-cases.
 #
 variables:                    # Pass environment variables as key value pairs.
   RAILS_LOG_TO_STDOUT: true
+  RAILS_SERVE_STATIC_FILES: true
+  DD_SERVICE: chronos-rails
+  DD_VERSION: 1.0.0
 
 secrets:       # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
   # Get RDS connection configuration from copilot command bellow
