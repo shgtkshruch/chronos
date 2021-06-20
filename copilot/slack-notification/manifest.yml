@@ -10,7 +10,7 @@ type: Scheduled Job
 on:
   # The scheduled trigger for your job. You can specify a Unix cron schedule or keyword (@weekly) or a rate (@every 1h30m)
   # AWS Schedule Expressions are also accepted: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
-  schedule: "cron(0 * * * ? *)"
+  schedule: "cron(0/5 * * * ? *)"
 #retries: 3        # Optional. The number of times to retry the job before failing.
 timeout: 5m    # Optional. The timeout after which to stop the job if it's still running. You can use the units (h, m, s).
 
@@ -23,6 +23,21 @@ command: 'bin/rails slack:notification'
 cpu: 256       # Number of CPU units for the task.
 memory: 512    # Amount of memory in MiB used by the task.
 
+logging:
+  destination:
+    Name: datadog
+    Host: http-intake.logs.datadoghq.com
+    TLS: 'on'
+    dd_service: chronos-rails
+    dd_source: ruby
+    provider: ecs
+  enableMetadata: true
+  secretOptions:
+    apikey: /copilot/chronos/dev/secrets/DATADOG_API_KEY
+  # To parse Rails logs formatted as JSON by Lograge
+  # https://github.com/aws-samples/amazon-ecs-firelens-examples/tree/mainline/examples/fluent-bit/parse-json
+  configFilePath: /fluent-bit/configs/parse-json.conf
+
 # Optional fields for more advanced use-cases.
 #
 #variables:                    # Pass environment variables as key value pairs.
@@ -34,5 +49,7 @@ memory: 512    # Amount of memory in MiB used by the task.
 # You can override any of the values defined above by environment.
 environments:
   dev:
+    variables:
+      DD_ENV: dev
     secrets:
       RAILS_MASTER_KEY: /copilot/chronos/dev/secrets/RAILS_MASTER_KEY
