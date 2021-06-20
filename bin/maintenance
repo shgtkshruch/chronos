@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+require "fileutils"
+
+# path to your application root.
+APP_ROOT = File.expand_path('..', __dir__)
+
+def system!(*args)
+  system(*args) || abort("\n== Command #{args} failed ==")
+end
+
+FileUtils.chdir APP_ROOT do
+  maintenance_file_path = 'public/maintenance/index.html'
+  ARGV.each do|mode|
+    case mode
+    when 'on'
+      if File.file?(maintenance_file_path)
+        puts 'Already maintenance mode is on'
+        break
+      end
+
+      puts 'Turn on maintenance mode'
+      system("cp public/maintenance.html #{maintenance_file_path}")
+      break
+    when 'off'
+      if !File.file?(maintenance_file_path)
+        puts 'Already maintenance mode is off'
+        break
+      end
+
+      puts 'Turn off maintenance mode'
+      system("rm #{maintenance_file_path}")
+      break
+    end
+  end
+end

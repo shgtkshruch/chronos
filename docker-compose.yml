@@ -21,6 +21,7 @@ services:
       - bundle:/bundle
       - node_modules:/app/node_modules
       - mysql:/var/lib/mysql
+      - nginx:/app/public/maintenance
     depends_on:
       - mysql
   rails:
@@ -46,6 +47,8 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
+    volumes:
+      - nginx:/usr/share/nginx/html/maintenance
     environment:
       RAILS_HOST: http://rails:3000
     ports:
@@ -57,3 +60,4 @@ volumes:
   bundle:
   node_modules:
   mysql:
+  nginx:
