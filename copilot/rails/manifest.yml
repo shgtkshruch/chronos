@@ -34,12 +34,23 @@ count: 1       # Number of tasks that should be running in your service.
 
 exec: true     # Enable running commands in your container.
 
+storage:
+  volumes:
+    rails_nginx:
+      efs: true
+      path: /app/public/maintenance
+      read_only: false
+
 sidecars:
   nginx:
     image: 353381651656.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/nginx:latest
     port: 80
     variables:
       RAILS_HOST: http://localhost:3000
+    mount_points:
+      - source_volume: rails_nginx
+        path: /usr/share/nginx/html/maintenance
+
   # https://docs.datadoghq.com/integrations/ecs_fargate/?tab=fluentbitandfirelens#trace-collection
   datadog-agent:
     image: datadog/agent:latest
