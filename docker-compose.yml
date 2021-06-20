@@ -55,6 +55,12 @@ services:
       - '3000:80'
     depends_on:
       - rails
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '8888:80'
 
 volumes:
   bundle:

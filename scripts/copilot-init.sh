@@ -18,7 +18,7 @@ else
   echo "(1/5) Skip: Application already exist"
 fi
 
-environment=$(copilot env ls | grep $env)
+environment=$(copilot env ls)
 
 if [ -z $environment ]
 then
@@ -51,6 +51,12 @@ copilot svc init \
   --svc-type "Load Balanced Web Service" \
   --dockerfile Dockerfile.prod \
   --port 3000
+
+copilot svc init \
+  --name frontend \
+  --svc-type "Load Balanced Web Service" \
+  --dockerfile frontend/Dockerfile \
+  --port 80
 
 echo "(5/6) Create job"
 copilot job init \
