@@ -30,7 +30,7 @@ Rails.application.configure do
         service: correlation.service.to_s,
         version: correlation.version.to_s
       },
-      ddsource: ["ruby"],
+      ddsource: "ruby",
       params: event.payload[:params]
     }
   end
