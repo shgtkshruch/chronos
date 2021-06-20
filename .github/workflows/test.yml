@@ -1,0 +1,92 @@
+name: Deploy flow
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'deploy envirionment'
+        default: 'dev'
+      rails:
+        description: 'deploy rails service'
+        default: 'false'
+      nuxt:
+        description: 'deploy nuxt service'
+        default: 'false'
+      maintenance:
+        description: 'mainteance or not'
+        default: 'false'
+
+jobs:
+  rails-build:
+    if: ${{ github.event.inputs.rails == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: run
+      run: |
+        echo "build rails application"
+
+  nuxt-build:
+    if: ${{ github.event.inputs.nuxt == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: run
+      run: |
+        echo "build nuxt application"
+
+  maintenacne-on:
+    if: ${{ always() && github.event.inputs.maintenance == 'true'}}
+    needs: [rails-build, nuxt-build]
+    environment:
+      name: ${{ github.event.inputs.env }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: run
+      run: |
+        echo "maintenance on"
+
+  rails-migration:
+    if: ${{ always() && github.event.inputs.rails == 'true' }}
+    needs: [maintenacne-on]
+    runs-on: ubuntu-latest
+    steps:
+    - name: run
+      run: |
+        echo "rails db:migrate"
+
+  rails-service-deploy:
+    if: ${{ always() && github.event.inputs.rails == 'true' }}
+    needs: [rails-migration]
+    runs-on: ubuntu-latest
+    steps:
+    - name: run
+      run: |
+        echo "deploy rails application"
+
+  rails-job-deploy:
+    if: ${{ always() && github.event.inputs.rails == 'true' }}
+    needs: [rails-migration]
+    runs-on: ubuntu-latest
+    steps:
+    - name: run
+      run: |
+        echo "deploy rails jobs"
+
+  nuxt-deploy:
+    if: ${{ always() && github.event.inputs.nuxt == 'true' }}
+    needs: [rails-migration]
+    runs-on: ubuntu-latest
+    steps:
+    - name: run
+      run: |
+        echo "deploy nuxt application"
+
+  maintenacne-off:
+    if: ${{ always() && github.event.inputs.maintenance == 'true' }}
+    needs: [rails-service-deploy, rails-job-deploy, nuxt-deploy]
+    environment:
+      name: ${{ github.event.inputs.env }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: run
+      run: |
+        echo "maintenance off"
