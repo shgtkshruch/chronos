@@ -40,11 +40,12 @@ Manual deploy `admin` endpoint service.
 
 ### Switch maintenance
 
-1. Add listener rule to show maintenance to ALB that created by AWS Copilot.
-
-2. Run command to switch maintenacne on/off.
 ```sh
-$ ./scripts/switch-maintenance.sh <env> <on or off>
+# turn on maintenance mode
+$ copilot svc exec --app chronos --command 'bin/maintenance on'
+
+# turn off maintenance mode
+$ copilot svc exec --app chronos --command 'bin/maintenance off'
 ```
 
 ### Cleaning
