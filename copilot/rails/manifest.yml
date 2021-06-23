@@ -94,6 +94,8 @@ secrets:       # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
 # You can override any of the values defined above by environment.
 environments:
   dev:
+    http:
+      alias: dev-rails.shgtkshruch.com
     variables:
       DD_ENV: dev
     sidecars:
@@ -103,6 +105,8 @@ environments:
     secrets:
       RAILS_MASTER_KEY: /copilot/chronos/dev/secrets/RAILS_MASTER_KEY
   staging:
+    http:
+      alias: dev-rails.shgtkshruch.com
     variabels:
       DD_ENV: staging
     sidecars:

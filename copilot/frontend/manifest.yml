@@ -4,7 +4,6 @@ type: Load Balanced Web Service
 http:
   path: '/'
   healthcheck: '/'
-  alias: 'frontend.shgtkshruch.com'
 
 image:
   build: frontend/Dockerfile
@@ -14,3 +13,11 @@ cpu: 256
 memory: 512
 count: 1
 exec: true
+
+environments:
+  dev:
+    http:
+      alias: dev-frontend.shgtkshruch.com
+  staging:
+    http:
+      alias: staging-frontend.shgtkshruch.com
