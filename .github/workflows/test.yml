@@ -75,8 +75,7 @@ jobs:
         builder: ${{ steps.buildx.outputs.name }}
         context: .
         file: ./Dockerfile.prod
-        # push: true
-        push: false
+        push: true
         tags: ${{ steps.login-ecr.outputs.registry }}/chronos/rails:${{ github.sha }}
         cache-from: |
           type=local,src=/tmp/.buildx-cache-new/bundle
@@ -128,8 +127,7 @@ jobs:
         builder: ${{ steps.buildx.outputs.name }}
         context: ./frontend
         file: ./frontend/Dockerfile
-        # push: true
-        push: false
+        push: true
         tags: ${{ steps.login-ecr.outputs.registry }}/chronos/frontend:${{ github.sha }}
         cache-from: |
           type=local,src=/tmp/.buildx-cache-new/bundle
@@ -161,11 +159,11 @@ jobs:
 
     - name: Trun on maintenance mode
       run: |
-        echo "copilot svc exec \
+        copilot svc exec \
           --app chronos \
           --env ${{ github.event.inputs.env }} \
           --svc rails \
-          --command 'bin/maintenance on'"
+          --command 'bin/maintenance on'
 
   rails-migration:
     if: ${{ always() && github.event.inputs.rails == 'true' }}
@@ -229,9 +227,10 @@ jobs:
 
     - name: Deploy Rails service
       run: |
-        echo "copilot svc deploy \
+        copilot svc deploy \
           --app chronos \
-          --env ${{ github.event.inputs.env }}"
+          --env ${{ github.event.inputs.env }} \
+          --name rails
 
   rails-job-deploy:
     if: ${{ always() && github.event.inputs.rails == 'true' }}
@@ -266,9 +265,9 @@ jobs:
 
     - name: Deploy scheduled jobs
       run: |
-        echo "copilot job deploy \
+        copilot job deploy \
           --app chronos \
-          --env ${{ github.event.inputs.env }}"
+          --env ${{ github.event.inputs.env }}
 
   nuxt-deploy:
     if: ${{ always() && github.event.inputs.nuxt == 'true' }}
@@ -293,10 +292,10 @@ jobs:
 
     - name: Deploy frontend service
       run: |
-        echo "copilot svc deploy \
+        copilot svc deploy \
           --app chronos \
           --env ${{ github.event.inputs.env }} \
-          --name frontend"
+          --name frontend
 
   maintenacne-off:
     if: ${{ always() && github.event.inputs.maintenance == 'true' }}
@@ -323,8 +322,8 @@ jobs:
 
     - name: Turn off maintenance mode
       run: |
-        echo "copilot svc exec \
+        copilot svc exec \
           --app chronos \
           --env ${{ github.event.inputs.env }} \
           --svc rails \
-          --command 'bin/maintenance off'"
+          --command 'bin/maintenance off'
