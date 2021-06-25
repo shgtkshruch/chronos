@@ -194,7 +194,7 @@ jobs:
           --env ${{ github.event.inputs.env }} \
           --name rails"
 
-  deploy-service:
+  deploy-services:
     if: ${{ always() && github.event.inputs.rails == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
@@ -223,7 +223,6 @@ jobs:
       run: |
         manifest_path="copilot/${{ matrix.service }}/manifest.yml"
         sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
-        cat $manifest_path
 
     - name: Deploy Rails service
       run: |
@@ -232,7 +231,7 @@ jobs:
           --env ${{ github.event.inputs.env }} \
           --name ${{ matrix.service }}
 
-  rails-job-deploy:
+  deploy-jobs:
     if: ${{ always() && github.event.inputs.rails == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
@@ -269,7 +268,7 @@ jobs:
           --app chronos \
           --env ${{ github.event.inputs.env }}
 
-  nuxt-deploy:
+  deploy-nuxt:
     if: ${{ always() && github.event.inputs.nuxt == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
@@ -299,7 +298,7 @@ jobs:
 
   maintenacne-off:
     if: ${{ always() && github.event.inputs.maintenance == 'true' }}
-    needs: [deploy-service, rails-job-deploy, nuxt-deploy]
+    needs: [deploy-services, deploy-jobs, deploy-nuxt]
     environment:
       name: ${{ github.event.inputs.env }}
     runs-on: ubuntu-latest
