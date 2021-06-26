@@ -194,10 +194,14 @@ jobs:
           --env ${{ github.event.inputs.env }} \
           --name rails"
 
-  rails-service-deploy:
+  deploy-services:
     if: ${{ always() && github.event.inputs.rails == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        service: [rails, admin-rails]
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -217,25 +221,23 @@ jobs:
 
     - name: Replace docker image tag to github sha
       run: |
-        services=$(copilot svc ls --json | jq -r '.services[] .name')
-
-        for workload in $services
-        do
-          manifest_path="copilot/$workload/manifest.yml"
-          sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
-        done
+        manifest_path="copilot/${{ matrix.service }}/manifest.yml"
+        sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
 
     - name: Deploy Rails service
       run: |
         copilot svc deploy \
           --app chronos \
           --env ${{ github.event.inputs.env }} \
-          --name rails
+          --name ${{ matrix.service }}
 
-  rails-job-deploy:
+  deploy-jobs:
     if: ${{ always() && github.event.inputs.rails == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        job: [slack-notification, slack-notification-30]
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -255,21 +257,17 @@ jobs:
 
     - name: Replace docker image tag to github sha
       run: |
-        jobs=$(copilot job ls --json | jq -r '.jobs[] .name')
+        manifest_path="copilot/${{ matrix.job }}/manifest.yml"
+        sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
 
-        for workload in $jobs
-        do
-          manifest_path="copilot/$workload/manifest.yml"
-          sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
-        done
-
-    - name: Deploy scheduled jobs
+    - name: Deploy scheduled job
       run: |
         copilot job deploy \
           --app chronos \
-          --env ${{ github.event.inputs.env }}
+          --env ${{ github.event.inputs.env }} \
+          --name ${{ matrix.job }}
 
-  nuxt-deploy:
+  deploy-nuxt:
     if: ${{ always() && github.event.inputs.nuxt == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
@@ -299,7 +297,7 @@ jobs:
 
   maintenacne-off:
     if: ${{ always() && github.event.inputs.maintenance == 'true' }}
-    needs: [rails-service-deploy, rails-job-deploy, nuxt-deploy]
+    needs: [deploy-services, deploy-jobs, deploy-nuxt]
     environment:
       name: ${{ github.event.inputs.env }}
     runs-on: ubuntu-latest
