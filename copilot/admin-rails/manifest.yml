@@ -34,6 +34,17 @@ count: 1       # Number of tasks that should be running in your service.
 
 exec: true     # Enable running commands in your container.
 
+# storage:
+#   volumes:
+#     sharedEFS:
+#       efs:
+#         id: fs-7f803a5f
+#         auth:
+#           access_point_id: fsap-00b0218d5874407bd
+#           iam: true
+#       path: /app/public/maintenance
+#       read_only: false
+
 sidecars:
   nginx:
     image: 353381651656.dkr.ecr.ap-northeast-1.amazonaws.com/chronos/nginx:latest
