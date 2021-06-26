@@ -237,7 +237,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        job: [slack-notification]
+        job: [slack-notification, slack-notification-30]
     steps:
     - name: Checkout
       uses: actions/checkout@v2

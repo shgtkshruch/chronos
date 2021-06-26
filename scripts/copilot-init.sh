@@ -65,5 +65,11 @@ copilot job init \
   --name slack-notification \
   --schedule "cron(0 * * * ? *)"
 
+copilot job init \
+  --app $app_name \
+  --image test \
+  --name slack-notification-30 \
+  --schedule "cron(30 * * * ? *)"
+
 echo "(6/6) Execute deploy job in GitHub Actons"
 gh workflow run --ref $branch
