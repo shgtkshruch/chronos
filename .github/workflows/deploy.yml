@@ -235,6 +235,9 @@ jobs:
     if: ${{ always() && github.event.inputs.rails == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        job: [slack-notification]
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -254,19 +257,15 @@ jobs:
 
     - name: Replace docker image tag to github sha
       run: |
-        jobs=$(copilot job ls --json | jq -r '.jobs[] .name')
+        manifest_path="copilot/${{ matrix.job }}/manifest.yml"
+        sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
 
-        for workload in $jobs
-        do
-          manifest_path="copilot/$workload/manifest.yml"
-          sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
-        done
-
-    - name: Deploy scheduled jobs
+    - name: Deploy scheduled job
       run: |
         copilot job deploy \
           --app chronos \
           --env ${{ github.event.inputs.env }}
+          --name ${{ matrix.job }}
 
   deploy-nuxt:
     if: ${{ always() && github.event.inputs.nuxt == 'true' }}
