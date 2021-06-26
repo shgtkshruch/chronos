@@ -78,9 +78,6 @@ variables:                    # Pass environment variables as key value pairs.
   DD_VERSION: 1.0.0
 
 secrets:       # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
-  # Get RDS connection configuration from copilot command bellow
-  # `copilot svc show -n rails --json | jq '.secrets[] | select(.name == "RAILSCLUSTER_SECRET").valueFrom'`
-  RAILSCLUSTER_SECRET: <RAILSCLUSTER_SECRET>
 
 # You can override any of the values defined above by environment.
 environments:

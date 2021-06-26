@@ -48,5 +48,5 @@ read -p "Are you sure? " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-  echo $json | gh workflow run test.yml --ref $branch --json
+  echo $json | gh workflow run deploy.yml --ref $branch --json
 fi
