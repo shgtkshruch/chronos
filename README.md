@@ -30,14 +30,6 @@ Create AWS resources (ex. VPC, ALB, Farge, RDS) with [AWS Copilot](https://aws.g
 $ ./scripts/copilot-init.sh <env> <domain>
 ```
 
-### Admin service
-
-Manual deploy `admin` endpoint service.
-
-```sh
-./scripts/copilot-admin-deploy.sh <env>
-```
-
 ### Switch maintenance
 
 ```sh
