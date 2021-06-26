@@ -2,9 +2,9 @@
 
 set -e -u
 
-identtifier='database-1'
+identifier='copilot-chronos-dev'
 
-status=$(aws rds describe-db-instances --db-instance-identifier $identtifier | jq -r '.DBInstances[].DBInstanceStatus')
+status=$(aws rds describe-db-instances --db-instance-identifier $identifier | jq -r '.DBInstances[].DBInstanceStatus')
 
 echo "RDS status: $status"
 
