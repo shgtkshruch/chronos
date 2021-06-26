@@ -264,7 +264,7 @@ jobs:
       run: |
         copilot job deploy \
           --app chronos \
-          --env ${{ github.event.inputs.env }}
+          --env ${{ github.event.inputs.env }} \
           --name ${{ matrix.job }}
 
   deploy-nuxt:
