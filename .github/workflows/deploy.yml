@@ -134,7 +134,7 @@ jobs:
           type=local,src=/tmp/.buildx-cache-new/npm
         cache-to: type=local,dest=/tmp/.buildx-cache-new
 
-  maintenacne-on:
+  maintenance-on:
     if: ${{ always() && github.event.inputs.maintenance == 'true'}}
     needs: [build-rails-image, build-nuxt-image]
     environment:
@@ -162,12 +162,12 @@ jobs:
         copilot svc exec \
           --app chronos \
           --env ${{ github.event.inputs.env }} \
-          --svc rails \
+          --name rails \
           --command 'bin/maintenance on'
 
   rails-migration:
     if: ${{ always() && github.event.inputs.rails == 'true' }}
-    needs: [maintenacne-on]
+    needs: [maintenance-on]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -295,7 +295,7 @@ jobs:
           --env ${{ github.event.inputs.env }} \
           --name frontend
 
-  maintenacne-off:
+  maintenance-off:
     if: ${{ always() && github.event.inputs.maintenance == 'true' }}
     needs: [deploy-services, deploy-jobs, deploy-nuxt]
     environment:
@@ -323,5 +323,5 @@ jobs:
         copilot svc exec \
           --app chronos \
           --env ${{ github.event.inputs.env }} \
-          --svc rails \
+          --name rails \
           --command 'bin/maintenance off'
