@@ -72,4 +72,4 @@ copilot job init \
   --schedule "cron(30 * * * ? *)"
 
 echo "(6/6) Execute deploy job in GitHub Actons"
-gh workflow run --ref $branch
+gh workflow run deploy.yml --ref $branch
