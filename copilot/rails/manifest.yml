@@ -106,7 +106,7 @@ environments:
       RAILS_MASTER_KEY: /copilot/chronos/dev/secrets/RAILS_MASTER_KEY
   staging:
     http:
-      alias: dev-rails.shgtkshruch.com
+      alias: staging-rails.shgtkshruch.com
     variabels:
       DD_ENV: staging
     sidecars:
