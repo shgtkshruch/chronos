@@ -17,7 +17,7 @@ on:
         default: 'false'
 
 env:
-  COPILOT_VERSION: v1.8.0
+  COPILOT_VERSION: v1.8.2
 
 jobs:
   build-rails-image:
