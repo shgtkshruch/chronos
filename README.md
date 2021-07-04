@@ -75,7 +75,12 @@ $ ./scripts/copilot-delete.sh
 Running a deployment workflow using [GitHub CLI](https://cli.github.com/).
 
 ```sh
-$ gh workflow run
-? Select a workflow  [Use arrows to move, type to filter]
-> Deploy service with AWS Copilot (deploy.yml)
+./scripts/deploy.sh -h
+Usage: ./scripts/deploy.sh [flags]
+
+    -r, --rails          Deploy Rails
+    -n, --nuxt           Deploy Nuxt
+    -m, --maintenance    Maintenance mode on
+    --branch string      Deploy branch name
+    --env string         Deploy environment. dev | staging | production
 ```
