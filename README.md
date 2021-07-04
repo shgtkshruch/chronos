@@ -14,6 +14,42 @@ $ docker-compose up -d
 
 ## AWS
 
+### IAM Policy
+
+IAM policy for Copilot deployment.
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "iam:*",
+                "servicediscovery:*",
+                "route53domains:*",
+                "s3:*",
+                "ssm:*",
+                "ecs:*",
+                "lambda:*",
+                "route53:*",
+                "cloudformation:*",
+                "ecr:*",
+                "ec2:*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": "*"
+        }
+    ]
+}
+```
+
 ### Nginx
 
 Build Nginx docker image, and push to ECR.
@@ -75,7 +111,12 @@ $ ./scripts/copilot-delete.sh
 Running a deployment workflow using [GitHub CLI](https://cli.github.com/).
 
 ```sh
-$ gh workflow run
-? Select a workflow  [Use arrows to move, type to filter]
-> Deploy service with AWS Copilot (deploy.yml)
+./scripts/deploy.sh -h
+Usage: ./scripts/deploy.sh [flags]
+
+    -r, --rails          Deploy Rails
+    -n, --nuxt           Deploy Nuxt
+    -m, --maintenance    Maintenance mode on
+    --branch string      Deploy branch name
+    --env string         Deploy environment. dev | staging | production
 ```
