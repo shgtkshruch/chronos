@@ -14,6 +14,42 @@ $ docker-compose up -d
 
 ## AWS
 
+### IAM Policy
+
+IAM policy for Copilot deployment.
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "iam:*",
+                "servicediscovery:*",
+                "route53domains:*",
+                "s3:*",
+                "ssm:*",
+                "ecs:*",
+                "lambda:*",
+                "route53:*",
+                "cloudformation:*",
+                "ecr:*",
+                "ec2:*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": "*"
+        }
+    ]
+}
+```
+
 ### Nginx
 
 Build Nginx docker image, and push to ECR.
