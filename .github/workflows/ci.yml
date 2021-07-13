@@ -1,0 +1,34 @@
+name: Deploy
+
+on:
+  push:
+
+jobs:
+  set-deploy-env:
+    runs-on: ubuntu-latest
+    outputs:
+      DEPLOY_ENV: ${{ steps.set-env.outputs.DEPLOY_ENV }}
+    steps:
+    - name: Set environment
+      id: set-env
+      run: |
+        if ${{ github.ref == 'refs/heads/develop' }}; then
+         echo "::set-output name=DEPLOY_ENV::dev"
+        elif ${{ github.ref == 'refs/heads/release' }}; then
+         echo "::set-output name=DEPLOY_ENV::staging"
+        elif ${{ github.ref == 'refs/heads/main' }}; then
+         echo "::set-output name=DEPLOY_ENV::production"
+        else
+          echo "Invalid branch name."
+          exit 1
+        fi
+
+  maintenance:
+    runs-on: ubuntu-latest
+    needs: [set-deploy-env]
+    environment:
+      name: ${{ needs.set-deploy-env.outputs.DEPLOY_ENV }}
+    steps:
+    - name: check env
+      run: |
+        echo "${{ needs.set-deploy-env.outputs.DEPLOY_ENV }}"
