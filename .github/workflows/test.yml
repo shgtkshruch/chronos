@@ -1,0 +1,26 @@
+name: Test
+
+on:
+  push:
+    banches:
+      - develop
+      - release
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: test
+      run: |
+        echo 'test'
+  dispatch-deploy:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+    - name: Invoke workflow with inputs
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: Deployment
+        token: ${{ secrets.PERSONAL_TOKEN }}
+        ref: ${{ github.event.pull_request.head.ref }}
