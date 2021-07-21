@@ -11,8 +11,8 @@ echo "RDS status: $status"
 if [ $status = 'available' ]
 then
   echo 'Stop RDS'
-  aws rds stop-db-instance --db-instance-identifier $identtifier
+  aws rds stop-db-instance --db-instance-identifier $identifier
 else
   echo 'Start RDS'
-  aws rds start-db-instance --db-instance-identifier $identtifier
+  aws rds start-db-instance --db-instance-identifier $identifier
 fi
