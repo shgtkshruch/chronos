@@ -180,6 +180,10 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-northeast-1
 
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
     - name: Setup AWS Copilot
       run: |
         curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
@@ -188,140 +192,144 @@ jobs:
 
     - name: Run migration
       run: |
-        echo "copilot svc exec \
-          --command 'bin/rails db:migrate' \
+        copilot task run \
+          --image ${{ steps.login-ecr.outputs.registry }}/chronos/rails:${{ github.sha }} \
+          --command 'bin/rails db:prepare' \
           --app chronos \
           --env ${{ github.event.inputs.env }} \
-          --name rails"
+          --env-vars RAILS_LOG_TO_STDOUT=true,RAILS_ENV=production \
+          --secrets RAILS_MASTER_KEY=/copilot/chronos/${{ github.event.inputs.env }}/secrets/RAILS_MASTER_KEY \
+          --follow
 
-  deploy-services:
-    if: ${{ always() && github.event.inputs.rails == 'true' }}
-    needs: [rails-migration]
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      matrix:
-        service: [rails, admin-rails]
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+  # deploy-services:
+  #   if: ${{ always() && github.event.inputs.rails == 'true' }}
+  #   needs: [rails-migration]
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 30
+  #   strategy:
+  #     matrix:
+  #       # service: [rails, admin-rails]
+  #       service: [rails]
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
+  #   - name: Configure AWS Credentials
+  #     uses: aws-actions/configure-aws-credentials@v1
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: ap-northeast-1
 
-    - name: Setup AWS Copilot
-      run: |
-        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
-        chmod +x copilot-linux
-        sudo mv copilot-linux /usr/local/bin/copilot
+  #   - name: Setup AWS Copilot
+  #     run: |
+  #       curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
+  #       chmod +x copilot-linux
+  #       sudo mv copilot-linux /usr/local/bin/copilot
 
-    - name: Replace docker image tag to github sha
-      run: |
-        manifest_path="copilot/${{ matrix.service }}/manifest.yml"
-        sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
+  #   - name: Replace docker image tag to github sha
+  #     run: |
+  #       manifest_path="copilot/${{ matrix.service }}/manifest.yml"
+  #       sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
 
-    - name: Deploy Rails service
-      run: |
-        copilot svc deploy \
-          --app chronos \
-          --env ${{ github.event.inputs.env }} \
-          --name ${{ matrix.service }}
+  #   - name: Deploy Rails service
+  #     run: |
+  #       copilot svc deploy \
+  #         --app chronos \
+  #         --env ${{ github.event.inputs.env }} \
+  #         --name ${{ matrix.service }}
 
-  deploy-jobs:
-    if: ${{ always() && github.event.inputs.rails == 'true' }}
-    needs: [rails-migration]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        job: [slack-notification, slack-notification-30]
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+  # deploy-jobs:
+  #   if: ${{ always() && github.event.inputs.rails == 'true' }}
+  #   needs: [rails-migration]
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       job: [slack-notification, slack-notification-30]
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
+  #   - name: Configure AWS Credentials
+  #     uses: aws-actions/configure-aws-credentials@v1
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: ap-northeast-1
 
-    - name: Setup AWS Copilot
-      run: |
-        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
-        chmod +x copilot-linux
-        sudo mv copilot-linux /usr/local/bin/copilot
+  #   - name: Setup AWS Copilot
+  #     run: |
+  #       curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
+  #       chmod +x copilot-linux
+  #       sudo mv copilot-linux /usr/local/bin/copilot
 
-    - name: Replace docker image tag to github sha
-      run: |
-        manifest_path="copilot/${{ matrix.job }}/manifest.yml"
-        sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
+  #   - name: Replace docker image tag to github sha
+  #     run: |
+  #       manifest_path="copilot/${{ matrix.job }}/manifest.yml"
+  #       sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
 
-    - name: Deploy scheduled job
-      run: |
-        copilot job deploy \
-          --app chronos \
-          --env ${{ github.event.inputs.env }} \
-          --name ${{ matrix.job }}
+  #   - name: Deploy scheduled job
+  #     run: |
+  #       copilot job deploy \
+  #         --app chronos \
+  #         --env ${{ github.event.inputs.env }} \
+  #         --name ${{ matrix.job }}
 
-  deploy-nuxt:
-    if: ${{ always() && github.event.inputs.nuxt == 'true' }}
-    needs: [rails-migration]
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+  # deploy-nuxt:
+  #   if: ${{ always() && github.event.inputs.nuxt == 'true' }}
+  #   needs: [rails-migration]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
+  #   - name: Configure AWS Credentials
+  #     uses: aws-actions/configure-aws-credentials@v1
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: ap-northeast-1
 
-    - name: Setup AWS Copilot
-      run: |
-        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
-        chmod +x copilot-linux
-        sudo mv copilot-linux /usr/local/bin/copilot
+  #   - name: Setup AWS Copilot
+  #     run: |
+  #       curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
+  #       chmod +x copilot-linux
+  #       sudo mv copilot-linux /usr/local/bin/copilot
 
-    - name: Deploy frontend service
-      run: |
-        copilot svc deploy \
-          --app chronos \
-          --env ${{ github.event.inputs.env }} \
-          --name frontend
+  #   - name: Deploy frontend service
+  #     run: |
+  #       copilot svc deploy \
+  #         --app chronos \
+  #         --env ${{ github.event.inputs.env }} \
+  #         --name frontend
 
-  maintenance-off:
-    if: ${{ always() && github.event.inputs.maintenance == 'true' }}
-    needs: [deploy-services, deploy-jobs, deploy-nuxt]
-    environment:
-      name: ${{ github.event.inputs.env }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+  # maintenance-off:
+  #   if: ${{ always() && github.event.inputs.maintenance == 'true' }}
+  #   needs: [deploy-services, deploy-jobs, deploy-nuxt]
+  #   environment:
+  #     name: ${{ github.event.inputs.env }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
+  #   - name: Configure AWS Credentials
+  #     uses: aws-actions/configure-aws-credentials@v1
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: ap-northeast-1
 
-    - name: Setup AWS Copilot
-      run: |
-        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
-        chmod +x copilot-linux
-        sudo mv copilot-linux /usr/local/bin/copilot
+  #   - name: Setup AWS Copilot
+  #     run: |
+  #       curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
+  #       chmod +x copilot-linux
+  #       sudo mv copilot-linux /usr/local/bin/copilot
 
-    - name: Turn off maintenance mode
-      run: |
-        copilot svc exec \
-          --app chronos \
-          --env ${{ github.event.inputs.env }} \
-          --name rails \
-          --command 'bin/maintenance off'
+  #   - name: Turn off maintenance mode
+  #     run: |
+  #       copilot svc exec \
+  #         --app chronos \
+  #         --env ${{ github.event.inputs.env }} \
+  #         --name rails \
+  #         --command 'bin/maintenance off'
