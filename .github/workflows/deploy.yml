@@ -180,6 +180,10 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-northeast-1
 
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
     - name: Setup AWS Copilot
       run: |
         curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
@@ -188,11 +192,14 @@ jobs:
 
     - name: Run migration
       run: |
-        echo "copilot svc exec \
-          --command 'bin/rails db:migrate' \
+        copilot task run \
+          --image ${{ steps.login-ecr.outputs.registry }}/chronos/rails:${{ github.sha }} \
+          --command 'bin/rails db:prepare' \
           --app chronos \
           --env ${{ github.event.inputs.env }} \
-          --name rails"
+          --env-vars RAILS_LOG_TO_STDOUT=true,RAILS_ENV=production \
+          --secrets RAILS_MASTER_KEY=/copilot/chronos/${{ github.event.inputs.env }}/secrets/RAILS_MASTER_KEY \
+          --follow
 
   deploy-services:
     if: ${{ always() && github.event.inputs.rails == 'true' }}
