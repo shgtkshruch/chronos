@@ -23,6 +23,7 @@ jobs:
   build-rails-image:
     if: ${{ github.event.inputs.rails == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
     - run: echo 'build rails image'
     # - name: Checkout
@@ -94,6 +95,7 @@ jobs:
   build-nuxt-image:
     if: ${{ github.event.inputs.nuxt == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
     - run: |
         echo 'build nuxt image'
@@ -143,6 +145,7 @@ jobs:
     environment:
       name: ${{ github.event.inputs.env }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
     - run: |
         echo 'maintenance on'
@@ -178,6 +181,7 @@ jobs:
     if: ${{ needs.maintenance-on.result != 'failure' && github.event.inputs.rails == 'true' }}
     needs: [maintenance-on]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
     - run: |
         echo 'rails migration'
@@ -217,7 +221,7 @@ jobs:
     if: ${{ github.event.inputs.rails == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     strategy:
       matrix:
         service: [rails, admin-rails]
@@ -256,6 +260,7 @@ jobs:
     if: ${{ github.event.inputs.rails == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       matrix:
         job: [slack-notification, slack-notification-30]
@@ -293,6 +298,7 @@ jobs:
     if: ${{ github.event.inputs.nuxt == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
     - run: |
         echo 'deploy nuxt'
@@ -326,6 +332,7 @@ jobs:
     environment:
       name: ${{ github.event.inputs.env }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
     - name: maintenance off
       if: ${{ needs.deploy-services.result != 'failure' && needs.deploy-services.result != 'failure' && needs.deploy-nuxt.result != 'failure' }}
