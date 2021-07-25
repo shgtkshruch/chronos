@@ -24,185 +24,197 @@ jobs:
     if: ${{ github.event.inputs.rails == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - run: echo 'build rails image'
+    # - name: Checkout
+    #   uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ap-northeast-1
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+    # - name: Login to Amazon ECR
+    #   id: login-ecr
+    #   uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Set up Docker Buildx
-      id: buildx
-      uses: docker/setup-buildx-action@v1
+    # - name: Set up Docker Buildx
+    #   id: buildx
+    #   uses: docker/setup-buildx-action@v1
 
-    - name: Cache Docker layers
-      uses: actions/cache@v2
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+    # - name: Cache Docker layers
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: /tmp/.buildx-cache
+    #     key: ${{ runner.os }}-buildx-${{ github.sha }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-buildx-
 
-    - name: Build bundle stage
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: ./Dockerfile.prod
-        target: bundle
-        cache-from: type=local,src=/tmp/.buildx-cache/bundle
-        cache-to: type=local,dest=/tmp/.buildx-cache-new/bundle
+    # - name: Build bundle stage
+    #   uses: docker/build-push-action@v2
+    #   with:
+    #     context: .
+    #     file: ./Dockerfile.prod
+    #     target: bundle
+    #     cache-from: type=local,src=/tmp/.buildx-cache/bundle
+    #     cache-to: type=local,dest=/tmp/.buildx-cache-new/bundle
 
-    - name: Build npm stage
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: ./Dockerfile.prod
-        target: npm
-        cache-from: type=local,src=/tmp/.buildx-cache/npm
-        cache-to: type=local,dest=/tmp/.buildx-cache-new/npm
+    # - name: Build npm stage
+    #   uses: docker/build-push-action@v2
+    #   with:
+    #     context: .
+    #     file: ./Dockerfile.prod
+    #     target: npm
+    #     cache-from: type=local,src=/tmp/.buildx-cache/npm
+    #     cache-to: type=local,dest=/tmp/.buildx-cache-new/npm
 
-    - name: Build docker image
-      id: docker-build
-      uses: docker/build-push-action@v2
-      with:
-        builder: ${{ steps.buildx.outputs.name }}
-        context: .
-        file: ./Dockerfile.prod
-        push: true
-        tags: ${{ steps.login-ecr.outputs.registry }}/chronos/rails:${{ github.sha }}
-        cache-from: |
-          type=local,src=/tmp/.buildx-cache-new/bundle
-          type=local,src=/tmp/.buildx-cache-new/npm
-        cache-to: type=local,dest=/tmp/.buildx-cache-new
+    # - name: Build docker image
+    #   id: docker-build
+    #   uses: docker/build-push-action@v2
+    #   with:
+    #     builder: ${{ steps.buildx.outputs.name }}
+    #     context: .
+    #     file: ./Dockerfile.prod
+    #     push: true
+    #     tags: ${{ steps.login-ecr.outputs.registry }}/chronos/rails:${{ github.sha }}
+    #     cache-from: |
+    #       type=local,src=/tmp/.buildx-cache-new/bundle
+    #       type=local,src=/tmp/.buildx-cache-new/npm
+    #     cache-to: type=local,dest=/tmp/.buildx-cache-new
 
-    # Temp fix
-    # https://github.com/docker/build-push-action/issues/252
-    # https://github.com/moby/buildkit/issues/1896
-    - name: Move cache
-      run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+    # # Temp fix
+    # # https://github.com/docker/build-push-action/issues/252
+    # # https://github.com/moby/buildkit/issues/1896
+    # - name: Move cache
+    #   run: |
+    #     rm -rf /tmp/.buildx-cache
+    #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   build-nuxt-image:
     if: ${{ github.event.inputs.nuxt == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - run: |
+        echo 'build nuxt image'
+    # - name: Checkout
+    #   uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ap-northeast-1
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+    # - name: Login to Amazon ECR
+    #   id: login-ecr
+    #   uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Set up Docker Buildx
-      id: buildx
-      uses: docker/setup-buildx-action@v1
+    # - name: Set up Docker Buildx
+    #   id: buildx
+    #   uses: docker/setup-buildx-action@v1
 
-    - name: Cache Docker layers
-      uses: actions/cache@v2
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+    # - name: Cache Docker layers
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: /tmp/.buildx-cache
+    #     key: ${{ runner.os }}-buildx-${{ github.sha }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-buildx-
 
-    - name: Build docker image
-      id: docker-build
-      uses: docker/build-push-action@v2
-      with:
-        builder: ${{ steps.buildx.outputs.name }}
-        context: ./frontend
-        file: ./frontend/Dockerfile
-        push: true
-        tags: ${{ steps.login-ecr.outputs.registry }}/chronos/frontend:${{ github.sha }}
-        cache-from: |
-          type=local,src=/tmp/.buildx-cache-new/bundle
-          type=local,src=/tmp/.buildx-cache-new/npm
-        cache-to: type=local,dest=/tmp/.buildx-cache-new
+    # - name: Build docker image
+    #   id: docker-build
+    #   uses: docker/build-push-action@v2
+    #   with:
+    #     builder: ${{ steps.buildx.outputs.name }}
+    #     context: ./frontend
+    #     file: ./frontend/Dockerfile
+    #     push: true
+    #     tags: ${{ steps.login-ecr.outputs.registry }}/chronos/frontend:${{ github.sha }}
+    #     cache-from: |
+    #       type=local,src=/tmp/.buildx-cache-new/bundle
+    #       type=local,src=/tmp/.buildx-cache-new/npm
+    #     cache-to: type=local,dest=/tmp/.buildx-cache-new
 
   maintenance-on:
-    if: ${{ always() && github.event.inputs.maintenance == 'true'}}
+    if: ${{ always() && github.event.inputs.maintenance == 'true' }}
     needs: [build-rails-image, build-nuxt-image]
     environment:
       name: ${{ github.event.inputs.env }}
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - run: |
+        echo 'maintenance on'
+        if [ ${{ needs.build-rails-image.result }} == 'failure' ] || [ ${{ needs.build-nuxt-image.result }} == 'failure']
+        then
+          exit 1
+        fi
+    # - name: Checkout
+    #   uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ap-northeast-1
 
-    - name: Setup AWS Copilot
-      run: |
-        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
-        chmod +x copilot-linux
-        sudo mv copilot-linux /usr/local/bin/copilot
+    # - name: Setup AWS Copilot
+    #   run: |
+    #     curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
+    #     chmod +x copilot-linux
+    #     sudo mv copilot-linux /usr/local/bin/copilot
 
-    - name: Trun on maintenance mode
-      run: |
-        copilot svc exec \
-          --app chronos \
-          --env ${{ github.event.inputs.env }} \
-          --name rails \
-          --command 'bin/maintenance on'
+    # - name: Trun on maintenance mode
+    #   run: |
+    #     copilot svc exec \
+    #       --app chronos \
+    #       --env ${{ github.event.inputs.env }} \
+    #       --name rails \
+    #       --command 'bin/maintenance on'
 
   rails-migration:
-    if: ${{ always() && github.event.inputs.rails == 'true' }}
+    if: ${{ needs.maintenance-on.result != 'failure' && github.event.inputs.rails == 'true' }}
     needs: [maintenance-on]
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - run: |
+        echo 'rails migration'
+        echo ${{ needs.maintenance-on.result }}
+    # - name: Checkout
+    #   uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ap-northeast-1
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+    # - name: Login to Amazon ECR
+    #   id: login-ecr
+    #   uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Setup AWS Copilot
-      run: |
-        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
-        chmod +x copilot-linux
-        sudo mv copilot-linux /usr/local/bin/copilot
+    # - name: Setup AWS Copilot
+    #   run: |
+    #     curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
+    #     chmod +x copilot-linux
+    #     sudo mv copilot-linux /usr/local/bin/copilot
 
-    - name: Run migration
-      run: |
-        copilot task run \
-          --image ${{ steps.login-ecr.outputs.registry }}/chronos/rails:${{ github.sha }} \
-          --command 'bin/rails db:prepare' \
-          --app chronos \
-          --env ${{ github.event.inputs.env }} \
-          --env-vars RAILS_LOG_TO_STDOUT=true,RAILS_ENV=production \
-          --secrets RAILS_MASTER_KEY=/copilot/chronos/${{ github.event.inputs.env }}/secrets/RAILS_MASTER_KEY \
-          --follow
+    # - name: Run migration
+    #   run: |
+    #     copilot task run \
+    #       --image ${{ steps.login-ecr.outputs.registry }}/chronos/rails:${{ github.sha }} \
+    #       --command 'bin/rails db:prepare' \
+    #       --app chronos \
+    #       --env ${{ github.event.inputs.env }} \
+    #       --env-vars RAILS_LOG_TO_STDOUT=true,RAILS_ENV=production \
+    #       --secrets RAILS_MASTER_KEY=/copilot/chronos/${{ github.event.inputs.env }}/secrets/RAILS_MASTER_KEY \
+    #       --follow
 
   deploy-services:
-    if: ${{ always() && github.event.inputs.rails == 'true' }}
+    if: ${{ github.event.inputs.rails == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -210,97 +222,103 @@ jobs:
       matrix:
         service: [rails, admin-rails]
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - run: |
+        echo 'deploy services'
+    # - name: Checkout
+    #   uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ap-northeast-1
 
-    - name: Setup AWS Copilot
-      run: |
-        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
-        chmod +x copilot-linux
-        sudo mv copilot-linux /usr/local/bin/copilot
+    # - name: Setup AWS Copilot
+    #   run: |
+    #     curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
+    #     chmod +x copilot-linux
+    #     sudo mv copilot-linux /usr/local/bin/copilot
 
-    - name: Replace docker image tag to github sha
-      run: |
-        manifest_path="copilot/${{ matrix.service }}/manifest.yml"
-        sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
+    # - name: Replace docker image tag to github sha
+    #   run: |
+    #     manifest_path="copilot/${{ matrix.service }}/manifest.yml"
+    #     sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
 
-    - name: Deploy Rails service
-      run: |
-        copilot svc deploy \
-          --app chronos \
-          --env ${{ github.event.inputs.env }} \
-          --name ${{ matrix.service }}
+    # - name: Deploy Rails service
+    #   run: |
+    #     copilot svc deploy \
+    #       --app chronos \
+    #       --env ${{ github.event.inputs.env }} \
+    #       --name ${{ matrix.service }}
 
   deploy-jobs:
-    if: ${{ always() && github.event.inputs.rails == 'true' }}
+    if: ${{ github.event.inputs.rails == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         job: [slack-notification, slack-notification-30]
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - run: echo 'deploy jobs'
+    # - name: Checkout
+    #   uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ap-northeast-1
 
-    - name: Setup AWS Copilot
-      run: |
-        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
-        chmod +x copilot-linux
-        sudo mv copilot-linux /usr/local/bin/copilot
+    # - name: Setup AWS Copilot
+    #   run: |
+    #     curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
+    #     chmod +x copilot-linux
+    #     sudo mv copilot-linux /usr/local/bin/copilot
 
-    - name: Replace docker image tag to github sha
-      run: |
-        manifest_path="copilot/${{ matrix.job }}/manifest.yml"
-        sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
+    # - name: Replace docker image tag to github sha
+    #   run: |
+    #     manifest_path="copilot/${{ matrix.job }}/manifest.yml"
+    #     sed -i -e 's/<image_tag>/${{ github.sha }}/' $manifest_path
 
-    - name: Deploy scheduled job
-      run: |
-        copilot job deploy \
-          --app chronos \
-          --env ${{ github.event.inputs.env }} \
-          --name ${{ matrix.job }}
+    # - name: Deploy scheduled job
+    #   run: |
+    #     copilot job deploy \
+    #       --app chronos \
+    #       --env ${{ github.event.inputs.env }} \
+    #       --name ${{ matrix.job }}
 
   deploy-nuxt:
-    if: ${{ always() && github.event.inputs.nuxt == 'true' }}
+    if: ${{ github.event.inputs.nuxt == 'true' }}
     needs: [rails-migration]
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - run: |
+        echo 'deploy nuxt'
+        exit 1
+    # - name: Checkout
+    #   uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ap-northeast-1
 
-    - name: Setup AWS Copilot
-      run: |
-        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
-        chmod +x copilot-linux
-        sudo mv copilot-linux /usr/local/bin/copilot
+    # - name: Setup AWS Copilot
+    #   run: |
+    #     curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
+    #     chmod +x copilot-linux
+    #     sudo mv copilot-linux /usr/local/bin/copilot
 
-    - name: Deploy frontend service
-      run: |
-        copilot svc deploy \
-          --app chronos \
-          --env ${{ github.event.inputs.env }} \
-          --name frontend
+    # - name: Deploy frontend service
+    #   run: |
+    #     copilot svc deploy \
+    #       --app chronos \
+    #       --env ${{ github.event.inputs.env }} \
+    #       --name frontend
 
   maintenance-off:
     if: ${{ always() && github.event.inputs.maintenance == 'true' }}
@@ -309,26 +327,30 @@ jobs:
       name: ${{ github.event.inputs.env }}
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-1
-
-    - name: Setup AWS Copilot
+    - name: maintenance off
+      if: ${{ needs.deploy-services.result != 'failure' && needs.deploy-services.result != 'failure' && needs.deploy-nuxt.result != 'failure' }}
       run: |
-        curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
-        chmod +x copilot-linux
-        sudo mv copilot-linux /usr/local/bin/copilot
+        echo 'maintenance off'
+    # - name: Checkout
+    #   uses: actions/checkout@v2
 
-    - name: Turn off maintenance mode
-      run: |
-        copilot svc exec \
-          --app chronos \
-          --env ${{ github.event.inputs.env }} \
-          --name rails \
-          --command 'bin/maintenance off'
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ap-northeast-1
+
+    # - name: Setup AWS Copilot
+    #   run: |
+    #     curl -Lo copilot-linux https://github.com/aws/copilot-cli/releases/download/${{ env.COPILOT_VERSION }}/copilot-linux
+    #     chmod +x copilot-linux
+    #     sudo mv copilot-linux /usr/local/bin/copilot
+
+    # - name: Turn off maintenance mode
+    #   run: |
+    #     copilot svc exec \
+    #       --app chronos \
+    #       --env ${{ github.event.inputs.env }} \
+    #       --name rails \
+    #       --command 'bin/maintenance off'
