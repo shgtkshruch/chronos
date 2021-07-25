@@ -99,6 +99,7 @@ jobs:
     steps:
     - run: |
         echo 'build nuxt image'
+        exit 1
     # - name: Checkout
     #   uses: actions/checkout@v2
 
@@ -335,7 +336,7 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: maintenance off
-      if: ${{ needs.deploy-services.result != 'failure' && needs.deploy-services.result != 'failure' && needs.deploy-nuxt.result != 'failure' }}
+      if: ${{ needs.deploy-services.result == success() && needs.deploy-services.result == success() && needs.deploy-nuxt.result == success() }}
       run: |
         echo 'maintenance off'
     # - name: Checkout
