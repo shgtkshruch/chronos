@@ -6,6 +6,12 @@
 $ COMPOSE_DOCKER_CLI_BUILD=1 docker-compose build
 ```
 
+Build docker image for production.
+
+```sh
+$ docker build -f Dockerfile.prod --secret id=master_key,src=config/master.key .
+```
+
 ## Dev
 
 ```sh

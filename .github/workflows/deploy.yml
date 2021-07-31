@@ -77,6 +77,8 @@ jobs:
         file: ./Dockerfile.prod
         push: true
         tags: ${{ steps.login-ecr.outputs.registry }}/chronos/rails:${{ github.sha }}
+        secrets: |
+            "master_key=${{ secrets.RAILS_MASTER_KEY }}"
         cache-from: |
           type=local,src=/tmp/.buildx-cache-new/bundle
           type=local,src=/tmp/.buildx-cache-new/npm
