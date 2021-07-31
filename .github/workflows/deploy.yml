@@ -57,7 +57,7 @@ jobs:
         file: ./Dockerfile.prod
         target: bundle
         cache-from: type=local,src=/tmp/.buildx-cache/bundle
-        cache-to: type=local,dest=/tmp/.buildx-cache-new/bundle
+        cache-to: type=local,dest=/tmp/.buildx-cache-new/bundle,mode=max
 
     - name: Build npm stage
       uses: docker/build-push-action@v2
@@ -66,7 +66,7 @@ jobs:
         file: ./Dockerfile.prod
         target: npm
         cache-from: type=local,src=/tmp/.buildx-cache/npm
-        cache-to: type=local,dest=/tmp/.buildx-cache-new/npm
+        cache-to: type=local,dest=/tmp/.buildx-cache-new/npm,mode=max
 
     - name: Build docker image
       id: docker-build
