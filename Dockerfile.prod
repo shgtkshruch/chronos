@@ -48,9 +48,9 @@ COPY . .
 COPY --from=bundle /app/vendor/bundle /app/vendor/bundle
 COPY --from=npm /app/node_modules node_modules
 
-# Set a dummy value to avoid errors when building docker image.
-# refs: https://github.com/rails/rails/issues/32947
-RUN SECRET_KEY_BASE=dummy bin/rails assets:precompile \
+# refs: https://github.com/rails/rails/issues/32947#issuecomment-653478965
+RUN --mount=type=secret,id=master_key,dst=/app/config/master.key \
+      bin/rails assets:precompile \
       && rm -rf tmp/cache/*
 
 FROM base AS main
